@@ -1,0 +1,63 @@
+{
+  "classInfos": [
+    {
+      "methodInfos": [
+        {
+          "sig": "(Ljava.lang.String;)V",
+          "methodType": 0,
+          "serialNumber": 1,
+          "name": "setName",
+          "id": 1
+        },
+        {
+          "sig": "()Z",
+          "methodType": 0,
+          "serialNumber": 2,
+          "name": "checkName",
+          "id": 2
+        },
+        {
+          "sig": "()Ljava.lang.String;",
+          "methodType": 0,
+          "serialNumber": 3,
+          "name": "getName",
+          "id": 3
+        }
+      ],
+      "name": "com/pandon/annotationjni/Test"
+    },
+    {
+      "methodInfos": [
+        {
+          "sig": "()J",
+          "methodType": 0,
+          "serialNumber": 0,
+          "name": "getAgeL",
+          "id": 65536
+        },
+        {
+          "sig": "()I",
+          "methodType": 0,
+          "serialNumber": 1,
+          "name": "getAge",
+          "id": 65537
+        },
+        {
+          "sig": "(Ljava.lang.String;)I",
+          "methodType": 0,
+          "serialNumber": 2,
+          "name": "getAge",
+          "id": 65538
+        },
+        {
+          "sig": "(I)V",
+          "methodType": 0,
+          "serialNumber": 3,
+          "name": "setAge",
+          "id": 65539
+        }
+      ],
+      "name": "com/pandon/annotationjni/MainActivity"
+    }
+  ]
+}

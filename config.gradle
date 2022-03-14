@@ -1,0 +1,46 @@
+ext {
+    //有重用的地方写在这里面，保证代码一致
+    android = [
+            compileSdk              : 30,
+            minSdk                  : 30,
+            targetSdk               : 30,
+            versionCode             : 30210916,
+            versionName             : "1.30.211112",
+            androidSupportSdkVersion: "28.0.0",
+    ]
+
+    useCertificate = 'platform'
+    print(rootDir.path)
+    useFreemePlatformRes = true
+    useFreemePlatformJar = true
+    if (rootProject.file('local.properties').exists()) {
+        Properties localProperties = new Properties()
+        localProperties.load(rootProject.file('local.properties').newDataInputStream())
+
+        sdkDir = localProperties.getProperty('sdk.dir')
+        sdkFreemeDir = file("${sdkDir}/extras/freeme").path
+        sdkFreemeSigningsDir = file("${sdkFreemeDir}/signings").path
+        sdkFreemePlatformDir = file("${sdkFreemeDir}/platforms/android-${android.compileSdk}").path
+
+        // signing
+        if (file("${sdkFreemeSigningsDir}/signings.properties").exists()) {
+            Properties signingsProperties = new Properties()
+            signingsProperties.load(file("${sdkFreemeSigningsDir}/signings.properties").newDataInputStream())
+
+            storeFile = file("${sdkFreemeSigningsDir}/${signingsProperties["key.${useCertificate}.store"]}").path
+            storePassword = signingsProperties["key.${useCertificate}.store.password"]
+            keyAlias = signingsProperties["key.${useCertificate}.alias"]
+            keyPassword = signingsProperties["key.${useCertificate}.password"]
+        }
+
+        // sdk
+        if (file("${sdkFreemePlatformDir}").exists()) {
+            if (useFreemePlatformRes && file("${sdkFreemePlatformDir}/freeme-framework-res.apk").exists()) {
+                sdkFreemePlatformRes = file("${sdkFreemePlatformDir}/freeme-framework-res.apk").path
+            }
+            if (useFreemePlatformJar && file("${sdkFreemePlatformDir}/android.jar").exists()) {
+                sdkFreemePlatformJar = file("${sdkFreemePlatformDir}/android.jar").path
+            }
+        }
+    }
+}
