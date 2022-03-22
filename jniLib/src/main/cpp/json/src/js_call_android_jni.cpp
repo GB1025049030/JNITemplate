@@ -19,7 +19,7 @@ JSCallAndroidJni::~JSCallAndroidJni() {
     Jkit jkit;
     if (jkit.IsValidEnv()) {
         JNIEnv *env = jkit.operator->();
-        for (const auto& jclassID : jclassIDs) {
+        for (const auto &jclassID : jclassIDs) {
             if (jclassID.second != nullptr) {
                 env->DeleteGlobalRef(jclassID.second);
             }
@@ -33,10 +33,12 @@ void JSCallAndroidJni::InitJavaVm(JavaVM *vm) {
     JNI_LOGI("InitJavaVm: end");
 }
 
-void JSCallAndroidJni::NativeInit(JNIEnv *env, const std::string& config) {
+void JSCallAndroidJni::NativeInit(JNIEnv *env, const std::string &config) {
     JNI_LOGI("NativeInit: begin");
     nlohmann::json jsonObject;
-    std::ifstream jsonFile("/sdcard/Android/data/com.pandon.javaapi.testannotation/files/" + config);
+    std::ifstream jsonFile(
+        "/sdcard/Android/data/com.pandon.javaapi.testannotation/files/" +
+        config);
     jsonFile >> jsonObject;
     from_json(jsonObject, jniInfo);
     if (!jniInfo.classes.empty()) {
@@ -107,12 +109,35 @@ void JSCallAndroidJni::NativeInit(JNIEnv *env, const std::string& config) {
     JNI_LOGI("NativeInit: end");
 }
 
+int JSCallAndroidJni::GetJNIMethodInfo(int32_t methodID,
+                                       JNIMethodInfo *methodInfo) {
+    if (jniMethodInfos.count(methodID) > 0) {
+        (*methodInfo) = jniMethodInfos.at(methodID);
+        if (methodInfo->classID && methodInfo->methodID) {
+            return JNI_OK;
+        }
+    }
+    JNI_LOGE("GetJNIMethodInfo: methodID(%" LIMIT "d) is not init", methodID);
+    return JNI_ERR;
+}
+
+int JSCallAndroidJni::GetJNIFieldInfo(int32_t fieldID,
+                                      JNIFieldInfo *fieldInfo) {
+    if (jniFieldInfos.count(fieldID) > 0) {
+        (*fieldInfo) = jniFieldInfos.at(fieldID);
+        if (fieldInfo->classID && fieldInfo->fieldId) {
+            return JNI_OK;
+        }
+    }
+    JNI_LOGE("GetJNIFieldInfo: fieldID(%" LIMIT "d) is not init", fieldID);
+    return JNI_ERR;
+}
+
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param) {
     JNI_LOGI("CallJavaMethod(Void): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID) {
-        JNI_LOGE("CallJavaMethod(Void): param error.");
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
         return;
     }
     MethodFlag returnType = GetReturnType(methodInfo.returnObject.flag);
@@ -136,8 +161,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, uint8_t *result) {
     JNI_LOGI("CallJavaMethod(Boolean): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Boolean): param error.");
         return;
     }
@@ -164,8 +192,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, int8_t *result) {
     JNI_LOGI("CallJavaMethod(Byte): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Byte): param error.");
         return;
     }
@@ -192,8 +223,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, uint16_t *result) {
     JNI_LOGI("CallJavaMethod(Char): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Char): param error.");
         return;
     }
@@ -220,8 +254,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, int16_t *result) {
     JNI_LOGI("CallJavaMethod(Short): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Short): param error.");
         return;
     }
@@ -248,8 +285,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, int32_t *result) {
     JNI_LOGI("CallJavaMethod(Int): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Int): param error.");
         return;
     }
@@ -276,8 +316,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, int64_t *result) {
     JNI_LOGI("CallJavaMethod(Long): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Long): param error.");
         return;
     }
@@ -304,8 +347,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, float *result) {
     JNI_LOGI("CallJavaMethod(Float): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Float): param error.");
         return;
     }
@@ -332,8 +378,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, double *result) {
     JNI_LOGI("CallJavaMethod(Double): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(Double): param error.");
         return;
     }
@@ -361,8 +410,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<uint8_t> *result) {
     JNI_LOGI("CallJavaMethod(BooleanArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(BooleanArray): param error.");
         return;
     }
@@ -391,8 +443,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<int8_t> *result) {
     JNI_LOGI("CallJavaMethod(ByteArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(ByteArray): param error.");
         return;
     }
@@ -420,8 +475,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<uint16_t> *result) {
     JNI_LOGI("CallJavaMethod(CharArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(CharArray): param error.");
         return;
     }
@@ -449,8 +507,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<int16_t> *result) {
     JNI_LOGI("CallJavaMethod(ShortArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(ShortArray): param error.");
         return;
     }
@@ -478,8 +539,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<int32_t> *result) {
     JNI_LOGI("CallJavaMethod(IntArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(IntArray): param error.");
         return;
     }
@@ -507,8 +571,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<int64_t> *result) {
     JNI_LOGI("CallJavaMethod(LongArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(LongArray): param error.");
         return;
     }
@@ -536,8 +603,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<float> *result) {
     JNI_LOGI("CallJavaMethod(FloatArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(FloatArray): param error.");
         return;
     }
@@ -565,8 +635,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<double> *result) {
     JNI_LOGI("CallJavaMethod(DoubleArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(DoubleArray): param error.");
         return;
     }
@@ -594,8 +667,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param, std::string *result) {
     JNI_LOGI("CallJavaMethod(String): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(String): param error.");
         return;
     }
@@ -622,8 +698,11 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
                                       jvalue *param,
                                       std::vector<std::string> *result) {
     JNI_LOGI("CallJavaMethod(StringArray): begin.");
-    JNIMethodInfo methodInfo = jniMethodInfos.at(methodID);
-    if (!methodInfo.classID || !methodInfo.methodID || !result) {
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    if (!result) {
         JNI_LOGE("CallJavaMethod(StringArray): param error.");
         return;
     }
@@ -651,11 +730,10 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      uint8_t *target) {
     JNI_LOGI("GetFieldValue(boolean): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(boolean): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(boolean) : param error");
         return;
@@ -682,11 +760,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      int8_t *target) {
     JNI_LOGI("GetFieldValue(byte): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(byte): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(byte) : param error");
         return;
@@ -713,11 +790,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      uint16_t *target) {
     JNI_LOGI("GetFieldValue(char): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(char): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(char) : param error");
         return;
@@ -744,11 +820,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      int16_t *target) {
     JNI_LOGI("GetFieldValue(short): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(short): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(short) : param error");
         return;
@@ -775,11 +850,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      int32_t *target) {
     JNI_LOGI("GetFieldValue(int): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(int): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(int) : param error");
         return;
@@ -805,11 +879,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      int64_t *target) {
     JNI_LOGI("GetFieldValue(long): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(long): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(long) : param error");
         return;
@@ -836,11 +909,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      float *target) {
     JNI_LOGI("GetFieldValue(float): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(float): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(float) : param error");
         return;
@@ -867,11 +939,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      double *target) {
     JNI_LOGI("GetFieldValue(double): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(double): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(double) : param error");
         return;
@@ -898,11 +969,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::string *target) {
     JNI_LOGI("GetFieldValue(String): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(String): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(String) : param error");
         return;
@@ -929,11 +999,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<uint8_t> *target) {
     JNI_LOGI("GetFieldValue(BooleanArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(BooleanArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(BooleanArray) : param error");
         return;
@@ -960,11 +1029,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int8_t> *target) {
     JNI_LOGI("GetFieldValue(ByteArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(ByteArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(ByteArray) : param error");
         return;
@@ -991,11 +1059,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<uint16_t> *target) {
     JNI_LOGI("GetFieldValue(CharArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(CharArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(CharArray) : param error");
         return;
@@ -1022,11 +1089,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int16_t> *target) {
     JNI_LOGI("GetFieldValue(ShortArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(ShortArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(ShortArray) : param error");
         return;
@@ -1053,11 +1119,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int32_t> *target) {
     JNI_LOGI("GetFieldValue(IntArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(IntArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(IntArray) : param error");
         return;
@@ -1084,11 +1149,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int64_t> *target) {
     JNI_LOGI("GetFieldValue(LongArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(LongArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(LongArray) : param error");
         return;
@@ -1115,11 +1179,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<float> *target) {
     JNI_LOGI("GetFieldValue(FloatArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(FloatArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(FloatArray) : param error");
         return;
@@ -1146,11 +1209,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<double> *target) {
     JNI_LOGI("GetFieldValue(DoubleArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(DoubleArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(DoubleArray) : param error");
         return;
@@ -1177,11 +1239,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<std::string> *target) {
     JNI_LOGI("GetFieldValue(StringArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("GetFieldValue(StringArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !target) {
         JNI_LOGE("GetFieldValue(StringArray) : param error");
         return;
@@ -1208,11 +1269,10 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      uint8_t *source) {
     JNI_LOGI("SetFieldValue(boolean): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(boolean): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(boolean) : param error");
         return;
@@ -1239,11 +1299,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      int8_t *source) {
     JNI_LOGI("SetFieldValue(byte): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(byte): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(byte) : param error");
         return;
@@ -1270,11 +1329,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      uint16_t *source) {
     JNI_LOGI("SetFieldValue(char): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(char): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(char) : param error");
         return;
@@ -1301,11 +1359,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      int16_t *source) {
     JNI_LOGI("SetFieldValue(short): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(short): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(short) : param error");
         return;
@@ -1332,11 +1389,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      int32_t *source) {
     JNI_LOGI("SetFieldValue(int): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(int): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(int) : param error");
         return;
@@ -1362,11 +1418,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      int64_t *source) {
     JNI_LOGI("SetFieldValue(long): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(long): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(long) : param error");
         return;
@@ -1393,11 +1448,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      float *source) {
     JNI_LOGI("SetFieldValue(float): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(float): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(float) : param error");
         return;
@@ -1424,11 +1478,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      double *source) {
     JNI_LOGI("SetFieldValue(double): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(double): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(double) : param error");
         return;
@@ -1455,11 +1508,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::string *source) {
     JNI_LOGI("SetFieldValue(String): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(String): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(String) : param error");
         return;
@@ -1486,11 +1538,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<uint8_t> *source) {
     JNI_LOGI("SetFieldValue(BooleanArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(BooleanArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(BooleanArray) : param error");
         return;
@@ -1521,11 +1572,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int8_t> *source) {
     JNI_LOGI("SetFieldValue(ByteArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(ByteArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(ByteArray) : param error");
         return;
@@ -1556,11 +1606,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<uint16_t> *source) {
     JNI_LOGI("SetFieldValue(CharArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(CharArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(CharArray) : param error");
         return;
@@ -1591,11 +1640,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int16_t> *source) {
     JNI_LOGI("SetFieldValue(ShortArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(ShortArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(ShortArray) : param error");
         return;
@@ -1626,11 +1674,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int32_t> *source) {
     JNI_LOGI("SetFieldValue(IntArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(IntArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(IntArray) : param error");
         return;
@@ -1661,11 +1708,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<int64_t> *source) {
     JNI_LOGI("SetFieldValue(LongArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(LongArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(LongArray) : param error");
         return;
@@ -1696,11 +1742,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<float> *source) {
     JNI_LOGI("SetFieldValue(FloatArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(FloatArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(FloatArray) : param error");
         return;
@@ -1731,11 +1776,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<double> *source) {
     JNI_LOGI("SetFieldValue(DoubleArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(DoubleArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(DoubleArray) : param error");
         return;
@@ -1766,11 +1810,10 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
                                      std::vector<std::string> *source) {
     JNI_LOGI("SetFieldValue(StringArray): begin(%" LIMIT "d)", fieldID);
-    if (jniFieldInfos.empty() || jniFieldInfos.count(fieldID) < 1) {
-        JNI_LOGE("SetFieldValue(StringArray): fieldID is not init");
+    JNIFieldInfo info;
+    if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
         return;
     }
-    JNIFieldInfo info = jniFieldInfos.at(fieldID);
     if (!info.classID || !info.fieldId || !object || !source) {
         JNI_LOGE("SetFieldValue(StringArray) : param error");
         return;

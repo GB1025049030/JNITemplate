@@ -29,6 +29,8 @@ public:
     ~JSCallAndroidJni();
     void InitJavaVm(JavaVM *vm);
     void NativeInit(JNIEnv *env, const std::string& config);
+    int GetJNIMethodInfo(int32_t methodID, JNIMethodInfo *methodInfo);
+    int GetJNIFieldInfo(int32_t fieldID, JNIFieldInfo *fieldInfo);
     void CallJavaMethod(int32_t methodID, jobject object, jvalue *param);
     void CallJavaMethod(int32_t methodID, jobject object, jvalue *param,
                         uint8_t *result);

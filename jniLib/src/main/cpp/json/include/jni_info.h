@@ -61,6 +61,8 @@ struct JNIMethodInfo {
     jclass classID;
     ReturnObject returnObject;
 
+    JNIMethodInfo() : methodID(), classID(), returnObject() {}
+
     JNIMethodInfo(jmethodID &methodID, jclass &classID,
                   ReturnObject &returnObject)
         : methodID(methodID), classID(classID), returnObject(returnObject) {}

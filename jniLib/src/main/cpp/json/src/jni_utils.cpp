@@ -287,8 +287,7 @@ void JNIUtils::SetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 void JNIUtils::GetBooleanArrayField(JNIEnv *env, jobject object,
                                     JNIFieldInfo *info,
                                     std::vector<uint8_t> *result) {
-    auto source =
-        static_cast<jbooleanArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jbooleanArray>(GetObjectField(env, object, info));
     ExtractJavaBoolArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -296,8 +295,7 @@ void JNIUtils::GetBooleanArrayField(JNIEnv *env, jobject object,
 void JNIUtils::GetByteArrayField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info,
                                  std::vector<int8_t> *result) {
-    auto source =
-        static_cast<jbyteArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jbyteArray>(GetObjectField(env, object, info));
     ExtractJavaByteArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -305,8 +303,7 @@ void JNIUtils::GetByteArrayField(JNIEnv *env, jobject object,
 void JNIUtils::GetCharArrayField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info,
                                  std::vector<uint16_t> *result) {
-    auto source =
-        static_cast<jcharArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jcharArray>(GetObjectField(env, object, info));
     ExtractJavaCharArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -314,16 +311,14 @@ void JNIUtils::GetCharArrayField(JNIEnv *env, jobject object,
 void JNIUtils::GetShortArrayField(JNIEnv *env, jobject object,
                                   JNIFieldInfo *info,
                                   std::vector<int16_t> *result) {
-    auto source =
-        static_cast<jshortArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jshortArray>(GetObjectField(env, object, info));
     ExtractJavaShortArray(env, source, result);
     env->DeleteLocalRef(source);
 }
 
 void JNIUtils::GetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                                 std::vector<int32_t> *result) {
-    auto source =
-        static_cast<jintArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jintArray>(GetObjectField(env, object, info));
     ExtractJavaIntArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -331,8 +326,7 @@ void JNIUtils::GetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 void JNIUtils::GetLongArrayField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info,
                                  std::vector<int64_t> *result) {
-    auto source =
-        static_cast<jlongArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jlongArray>(GetObjectField(env, object, info));
     ExtractJavaLongArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -340,8 +334,7 @@ void JNIUtils::GetLongArrayField(JNIEnv *env, jobject object,
 void JNIUtils::GetFloatArrayField(JNIEnv *env, jobject object,
                                   JNIFieldInfo *info,
                                   std::vector<float> *result) {
-    auto source =
-        static_cast<jfloatArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jfloatArray>(GetObjectField(env, object, info));
     ExtractJavaFloatArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -349,8 +342,7 @@ void JNIUtils::GetFloatArrayField(JNIEnv *env, jobject object,
 void JNIUtils::GetDoubleArrayField(JNIEnv *env, jobject object,
                                    JNIFieldInfo *info,
                                    std::vector<double> *result) {
-    auto source =
-        static_cast<jdoubleArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jdoubleArray>(GetObjectField(env, object, info));
     ExtractJavaDoubleArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -365,8 +357,7 @@ void JNIUtils::GetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 void JNIUtils::GetStringArrayField(JNIEnv *env, jobject object,
                                    JNIFieldInfo *info,
                                    std::vector<std::string> *result) {
-    auto source =
-        static_cast<jobjectArray>(GetObjectField(env, object, info));
+    auto source = static_cast<jobjectArray>(GetObjectField(env, object, info));
     ExtractJavaStringArray(env, source, result);
     env->DeleteLocalRef(source);
 }
@@ -872,248 +863,343 @@ void JNIUtils::ConvertJavaStringArray(JNIEnv *env,
 
 jobject JNIUtils::CallJavaObjectMethod(JNIEnv *env,
                                        JNIMethodInfo const *methodInfo,
-                                       jobject object, jvalue *param) {
+                                       jobject holder, jvalue *param) {
     jobject ret = nullptr;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticObjectMethodA(methodInfo->classID,
                                            methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualObjectMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret =
-                    env->CallObjectMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaObjectMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaObjectMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaObjectMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualObjectMethodA(object, methodInfo->classID,
+                                                   methodInfo->methodID, param);
+        } else {
+            ret = env->CallObjectMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jboolean JNIUtils::CallJavaBooleanMethod(JNIEnv *env,
                                          JNIMethodInfo const *methodInfo,
-                                         jobject object, jvalue *param) {
+                                         jobject holder, jvalue *param) {
     jboolean ret = JNI_FALSE;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticBooleanMethodA(methodInfo->classID,
                                             methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualBooleanMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret = env->CallBooleanMethodA(object, methodInfo->methodID,
-                                              param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaBooleanMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaBooleanMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaBooleanMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualBooleanMethodA(
+                object, methodInfo->classID, methodInfo->methodID, param);
+        } else {
+            ret = env->CallBooleanMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jbyte JNIUtils::CallJavaByteMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
-                                   jobject object, jvalue *param) {
+                                   jobject holder, jvalue *param) {
     jbyte ret = 0;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticByteMethodA(methodInfo->classID,
                                          methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualByteMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret = env->CallByteMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaByteMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaByteMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaByteMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualByteMethodA(object, methodInfo->classID,
+                                                 methodInfo->methodID, param);
+        } else {
+            ret = env->CallByteMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jchar JNIUtils::CallJavaCharMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
-                                   jobject object, jvalue *param) {
+                                   jobject holder, jvalue *param) {
     jchar ret = 0;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticCharMethodA(methodInfo->classID,
                                          methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualCharMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret = env->CallCharMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaCharMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaCharMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaCharMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualCharMethodA(object, methodInfo->classID,
+                                                 methodInfo->methodID, param);
+        } else {
+            ret = env->CallCharMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jshort JNIUtils::CallJavaShortMethod(JNIEnv *env,
                                      JNIMethodInfo const *methodInfo,
-                                     jobject object, jvalue *param) {
+                                     jobject holder, jvalue *param) {
     jshort ret = 0;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticShortMethodA(methodInfo->classID,
                                           methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualShortMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret =
-                    env->CallShortMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaShortMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaShortMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaShortMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualShortMethodA(object, methodInfo->classID,
+                                                  methodInfo->methodID, param);
+        } else {
+            ret = env->CallShortMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jint JNIUtils::CallJavaIntMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
-                                 jobject object, jvalue *param) {
+                                 jobject holder, jvalue *param) {
     jint ret = 0;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticIntMethodA(methodInfo->classID,
                                         methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualIntMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret = env->CallIntMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaIntMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaIntMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaIntMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualIntMethodA(object, methodInfo->classID,
+                                                methodInfo->methodID, param);
+        } else {
+            ret = env->CallIntMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jlong JNIUtils::CallJavaLongMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
-                                   jobject object, jvalue *param) {
+                                   jobject holder, jvalue *param) {
     jlong ret = 0;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticLongMethodA(methodInfo->classID,
                                          methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualLongMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret = env->CallLongMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaLongMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaLongMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaLongMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualLongMethodA(object, methodInfo->classID,
+                                                 methodInfo->methodID, param);
+        } else {
+            ret = env->CallLongMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jfloat JNIUtils::CallJavaFloatMethod(JNIEnv *env,
                                      JNIMethodInfo const *methodInfo,
-                                     jobject object, jvalue *param) {
+                                     jobject holder, jvalue *param) {
     jfloat ret = 0;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticFloatMethodA(methodInfo->classID,
                                           methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualFloatMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret =
-                    env->CallFloatMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaFloatMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaFloatMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaFloatMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualFloatMethodA(object, methodInfo->classID,
+                                                  methodInfo->methodID, param);
+        } else {
+            ret = env->CallFloatMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 jdouble JNIUtils::CallJavaDoubleMethod(JNIEnv *env,
                                        JNIMethodInfo const *methodInfo,
-                                       jobject object, jvalue *param) {
+                                       jobject holder, jvalue *param) {
     jdouble ret = 0;
     if (IsStatic(methodInfo->returnObject.flag)) {
         ret = env->CallStaticDoubleMethodA(methodInfo->classID,
                                            methodInfo->methodID, param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                ret = env->CallNonvirtualDoubleMethodA(
-                    object, methodInfo->classID, methodInfo->methodID, param);
-            } else {
-                ret =
-                    env->CallDoubleMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaDoubleMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaDoubleMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaDoubleMethod : object is null, there may be no "
+                "no-argument constructor");
+            return ret;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            ret = env->CallNonvirtualDoubleMethodA(object, methodInfo->classID,
+                                                   methodInfo->methodID, param);
+        } else {
+            ret = env->CallDoubleMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
     return ret;
 }
 
 void JNIUtils::CallJavaVoidMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
-                                  jobject object, jvalue *param) {
+                                  jobject holder, jvalue *param) {
     if (IsStatic(methodInfo->returnObject.flag)) {
         env->CallStaticVoidMethodA(methodInfo->classID, methodInfo->methodID,
                                    param);
         ClearException(env);
     } else {
-        if (object) {
-            if (IsNonvirtual(methodInfo->returnObject.flag)) {
-                env->CallNonvirtualVoidMethodA(object, methodInfo->classID,
-                                               methodInfo->methodID, param);
-            } else {
-                env->CallVoidMethodA(object, methodInfo->methodID, param);
-            }
+        jobject object = holder;
+        if (!object) {
+            JNI_LOGW("CallJavaVoidMethod : holder is null");
+            jmethodID init =
+                env->GetMethodID(methodInfo->classID, "<init>", "()V");
+            object = env->NewObject(methodInfo->classID, init);
             ClearException(env);
-        } else {
-            JNI_LOGD("CallJavaVoidMethod : object is null");
         }
+        if (!object) {
+            JNI_LOGE(
+                "CallJavaVoidMethod : object is null, there may be no "
+                "no-argument constructor");
+            return;
+        }
+        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+            env->CallNonvirtualVoidMethodA(object, methodInfo->classID,
+                                           methodInfo->methodID, param);
+        } else {
+            env->CallVoidMethodA(object, methodInfo->methodID, param);
+        }
+        ClearException(env);
     }
 }
 
 void JNIUtils::CallJavaStringMethod(JNIEnv *env,
                                     const JNIMethodInfo *methodInfo,
-                                    jobject object, jvalue *param,
+                                    jobject holder, jvalue *param,
                                     std::string *result) {
     auto str =
-        (jstring)JNIUtils::CallJavaObjectMethod(env, methodInfo, object, param);
+        (jstring)JNIUtils::CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!str) {
         JNI_LOGE("CallJavaMethod: str is null");
         return;
@@ -1124,10 +1210,10 @@ void JNIUtils::CallJavaStringMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaBooleanArrayMethod(JNIEnv *env,
                                           const JNIMethodInfo *methodInfo,
-                                          jobject object, jvalue *param,
+                                          jobject holder, jvalue *param,
                                           std::vector<uint8_t> *result) {
     auto arr =
-        (jbooleanArray)CallJavaObjectMethod(env, methodInfo, object, param);
+        (jbooleanArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaBooleanArrayMethod: arr is null");
         return;
@@ -1138,9 +1224,9 @@ void JNIUtils::CallJavaBooleanArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaByteArrayMethod(JNIEnv *env,
                                        const JNIMethodInfo *methodInfo,
-                                       jobject object, jvalue *param,
+                                       jobject holder, jvalue *param,
                                        std::vector<int8_t> *result) {
-    auto arr = (jbyteArray)CallJavaObjectMethod(env, methodInfo, object, param);
+    auto arr = (jbyteArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaByteArrayMethod: arr is null");
         return;
@@ -1151,9 +1237,9 @@ void JNIUtils::CallJavaByteArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaCharArrayMethod(JNIEnv *env,
                                        const JNIMethodInfo *methodInfo,
-                                       jobject object, jvalue *param,
+                                       jobject holder, jvalue *param,
                                        std::vector<uint16_t> *result) {
-    auto arr = (jcharArray)CallJavaObjectMethod(env, methodInfo, object, param);
+    auto arr = (jcharArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaCharArrayMethod: arr is null");
         return;
@@ -1164,10 +1250,10 @@ void JNIUtils::CallJavaCharArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaShortArrayMethod(JNIEnv *env,
                                         const JNIMethodInfo *methodInfo,
-                                        jobject object, jvalue *param,
+                                        jobject holder, jvalue *param,
                                         std::vector<int16_t> *result) {
     auto arr =
-        (jshortArray)CallJavaObjectMethod(env, methodInfo, object, param);
+        (jshortArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaShortArrayMethod: arr is null");
         return;
@@ -1178,9 +1264,9 @@ void JNIUtils::CallJavaShortArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaIntArrayMethod(JNIEnv *env,
                                       const JNIMethodInfo *methodInfo,
-                                      jobject object, jvalue *param,
+                                      jobject holder, jvalue *param,
                                       std::vector<int32_t> *result) {
-    auto arr = (jintArray)CallJavaObjectMethod(env, methodInfo, object, param);
+    auto arr = (jintArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaIntArrayMethod: arr is null");
         return;
@@ -1191,9 +1277,9 @@ void JNIUtils::CallJavaIntArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaLongArrayMethod(JNIEnv *env,
                                        const JNIMethodInfo *methodInfo,
-                                       jobject object, jvalue *param,
+                                       jobject holder, jvalue *param,
                                        std::vector<int64_t> *result) {
-    auto arr = (jlongArray)CallJavaObjectMethod(env, methodInfo, object, param);
+    auto arr = (jlongArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaLongArrayMethod: arr is null");
         return;
@@ -1204,10 +1290,10 @@ void JNIUtils::CallJavaLongArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaFloatArrayMethod(JNIEnv *env,
                                         const JNIMethodInfo *methodInfo,
-                                        jobject object, jvalue *param,
+                                        jobject holder, jvalue *param,
                                         std::vector<float> *result) {
     auto arr =
-        (jfloatArray)CallJavaObjectMethod(env, methodInfo, object, param);
+        (jfloatArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaFloatArrayMethod: arr is null");
         return;
@@ -1218,10 +1304,10 @@ void JNIUtils::CallJavaFloatArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaDoubleArrayMethod(JNIEnv *env,
                                          const JNIMethodInfo *methodInfo,
-                                         jobject object, jvalue *param,
+                                         jobject holder, jvalue *param,
                                          std::vector<double> *result) {
     auto arr =
-        (jdoubleArray)CallJavaObjectMethod(env, methodInfo, object, param);
+        (jdoubleArray)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaDoubleArrayMethod: arr is null");
         return;
@@ -1232,10 +1318,10 @@ void JNIUtils::CallJavaDoubleArrayMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaStringArrayMethod(JNIEnv *env,
                                          const JNIMethodInfo *methodInfo,
-                                         jobject object, jvalue *param,
+                                         jobject holder, jvalue *param,
                                          std::vector<std::string> *result) {
     auto arr = (jobjectArray)JNIUtils::CallJavaObjectMethod(env, methodInfo,
-                                                            object, param);
+                                                            holder, param);
     if (!arr) {
         JNI_LOGE("CallJavaStringArrayMethod: strArr is null");
         return;

@@ -109,72 +109,72 @@ public:
                                     JNIFieldInfo *info,
                                     std::vector<std::string> *source);
     static void CallJavaVoidMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
-                                   jobject object, jvalue *param);
+                                   jobject holder, jvalue *param);
     static jboolean CallJavaBooleanMethod(JNIEnv *env,
                                           JNIMethodInfo const *methodInfo,
-                                          jobject object, jvalue *param);
+                                          jobject holder, jvalue *param);
     static jbyte CallJavaByteMethod(JNIEnv *env,
                                     JNIMethodInfo const *methodInfo,
-                                    jobject object, jvalue *param);
+                                    jobject holder, jvalue *param);
     static jchar CallJavaCharMethod(JNIEnv *env,
                                     JNIMethodInfo const *methodInfo,
-                                    jobject object, jvalue *param);
+                                    jobject holder, jvalue *param);
     static jshort CallJavaShortMethod(JNIEnv *env,
                                       JNIMethodInfo const *methodInfo,
-                                      jobject object, jvalue *param);
+                                      jobject holder, jvalue *param);
     static jint CallJavaIntMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
-                                  jobject object, jvalue *param);
+                                  jobject holder, jvalue *param);
     static jlong CallJavaLongMethod(JNIEnv *env,
                                     JNIMethodInfo const *methodInfo,
-                                    jobject object, jvalue *param);
+                                    jobject holder, jvalue *param);
     static jfloat CallJavaFloatMethod(JNIEnv *env,
                                       JNIMethodInfo const *methodInfo,
-                                      jobject object, jvalue *param);
+                                      jobject holder, jvalue *param);
     static jdouble CallJavaDoubleMethod(JNIEnv *env,
                                         JNIMethodInfo const *methodInfo,
-                                        jobject object, jvalue *param);
+                                        jobject holder, jvalue *param);
     static void CallJavaStringMethod(JNIEnv *env,
                                      JNIMethodInfo const *methodInfo,
-                                     jobject object, jvalue *param,
+                                     jobject holder, jvalue *param,
                                      std::string *result);
     static jobject CallJavaObjectMethod(JNIEnv *env,
                                         JNIMethodInfo const *methodInfo,
-                                        jobject object, jvalue *param);
+                                        jobject holder, jvalue *param);
     static void CallJavaBooleanArrayMethod(JNIEnv *env,
                                            JNIMethodInfo const *methodInfo,
-                                           jobject object, jvalue *param,
+                                           jobject holder, jvalue *param,
                                            std::vector<uint8_t> *result);
     static void CallJavaByteArrayMethod(JNIEnv *env,
                                         JNIMethodInfo const *methodInfo,
-                                        jobject object, jvalue *param,
+                                        jobject holder, jvalue *param,
                                         std::vector<int8_t> *result);
     static void CallJavaCharArrayMethod(JNIEnv *env,
                                         JNIMethodInfo const *methodInfo,
-                                        jobject object, jvalue *param,
+                                        jobject holder, jvalue *param,
                                         std::vector<uint16_t> *result);
     static void CallJavaShortArrayMethod(JNIEnv *env,
                                          JNIMethodInfo const *methodInfo,
-                                         jobject object, jvalue *param,
+                                         jobject holder, jvalue *param,
                                          std::vector<int16_t> *result);
     static void CallJavaIntArrayMethod(JNIEnv *env,
                                        JNIMethodInfo const *methodInfo,
-                                       jobject object, jvalue *param,
+                                       jobject holder, jvalue *param,
                                        std::vector<int32_t> *result);
     static void CallJavaLongArrayMethod(JNIEnv *env,
                                         JNIMethodInfo const *methodInfo,
-                                        jobject object, jvalue *param,
+                                        jobject holder, jvalue *param,
                                         std::vector<int64_t> *result);
     static void CallJavaFloatArrayMethod(JNIEnv *env,
                                          JNIMethodInfo const *methodInfo,
-                                         jobject object, jvalue *param,
+                                         jobject holder, jvalue *param,
                                          std::vector<float> *result);
     static void CallJavaDoubleArrayMethod(JNIEnv *env,
                                           JNIMethodInfo const *methodInfo,
-                                          jobject object, jvalue *param,
+                                          jobject holder, jvalue *param,
                                           std::vector<double> *result);
     static void CallJavaStringArrayMethod(JNIEnv *env,
                                           JNIMethodInfo const *methodInfo,
-                                          jobject object, jvalue *param,
+                                          jobject holder, jvalue *param,
                                           std::vector<std::string> *result);
     static void ExtractJavaBoolArray(JNIEnv *env, jbooleanArray source,
                                      std::vector<uint8_t> *result);
