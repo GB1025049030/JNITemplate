@@ -5,9 +5,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
-    public static final String METHOD_J2C_FORMAT = "void convertJ2C%s(jobject obj, %s* data);";
-    public static final String METHOD_C2J_FORMAT = "void convertC2J%s(%s data, jobject* obj);";
-    public static final String OBJECT_ARRAY_FORMAT = "std::vector<%s>";
+    public static class Format {
+        public static final String NAME_SPACE = "namespace %s {\n";
+        public static final String NAME_SPACE_TEMPLATE = "using namespace TEMPLATE;\n";
+
+        public static final String MACRO_JSON_FILE = "#define JSON_FILE_%s \"%s.json\"\n";
+        public static final String MACRO_JAVA_BEAN = "#define JAVA_BEAN_%s \"%s\"\n";
+
+        public static final String FIELD_ARRAY_FORMAT = "std::vector<%s>";
+
+        public static final String TRANSFORM_CLASS_HEADER = "class Transform%s : public Transform<%s>";
+        public static final String TRANSFORM_USING = "using Transform::Transform;\n";
+        public static final String TRANSFORM_PUBLIC = "public:\n";
+        public static final String TRANSFORM_METHOD_EXTRACT = "void Extract(jobject source, %s *target) override;\n";
+        public static final String TRANSFORM_METHOD_CONVERT = "void Convert(jobject target, %s *source) override;\n";
+
+        public static final String ENUM_CLASS_HEADER = "enum class %s_FIELD_CODE";
+
+        public static final String METHOD_CODE_HEADER = "enum class MethodCode_%s {\n";
+        public static final String METHOD_CODE_ANNOTATION = "// sign: %s\n";
+        public static final String METHOD_CODE = "%s_%s_%d = %d,\n";
+    }
+
 
     public static final String SYMBOL_END = ";";
     public static final String SYMBOL_L = "L";

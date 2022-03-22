@@ -6,6 +6,7 @@
 #define JNITEMPLATE_JNI_ERROR_H
 
 namespace OHOS {
+namespace TEMPLATE {
     using ErrCode = int;
 
     constexpr ErrCode ErrCodeOffset(unsigned int subsystem, unsigned int module = 0) {
@@ -16,10 +17,11 @@ namespace OHOS {
 
     constexpr ErrCode JNI_BUNDLEMGR_ERR_OFFSET = ErrCodeOffset(0, 0x02);
 
-    enum {
-        ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR = JNI_BUNDLEMGR_ERR_OFFSET + 0x0001,
-        ERR_JNI_PARSE_PROFILE_MISSING_PROP,
-    };
-}
+enum {
+    ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR = JNI_BUNDLEMGR_ERR_OFFSET + 0x0001,
+    ERR_JNI_PARSE_PROFILE_MISSING_PROP,
+};
+}  // namespace TEMPLATE
+}  // namespace OHOS
 
-#endif //JNITEMPLATE_JNI_ERROR_H
+#endif  // JNITEMPLATE_JNI_ERROR_H

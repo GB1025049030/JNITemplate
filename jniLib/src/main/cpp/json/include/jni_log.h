@@ -8,9 +8,10 @@
 #include "android/flog.h"
 
 namespace OHOS {
-
+namespace TEMPLATE {
 #define LIMIT ""
 
-}
+}  // namespace TEMPLATE
+}  // namespace OHOS
 
-#endif //JNITEMPLATE_JNI_LOG_H
+#endif  // JNITEMPLATE_LOG_H

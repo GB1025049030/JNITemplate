@@ -14,6 +14,7 @@ public class JniClassInfo {
     public static class PackInfo {
         public final ArrayList<ClassInfo> classes = new ArrayList<>();
         final Set<String> includes = new HashSet<>();
+        final Set<String> preDefined = new HashSet<>();
 
         public void addClassInfo(ClassInfo info) {
             classes.add(info);
@@ -23,8 +24,16 @@ public class JniClassInfo {
             includes.add(fileName);
         }
 
-        public void addIncludes(ArrayList<String> list) {
+        public void addInclude(ArrayList<String> list) {
             includes.addAll(list);
+        }
+
+        public void addPreDefined(String fileName) {
+            preDefined.add(fileName);
+        }
+
+        public void addPreDefined(ArrayList<String> list) {
+            preDefined.addAll(list);
         }
     }
 
@@ -224,12 +233,15 @@ public class JniClassInfo {
     public static class FieldInfo extends ArgumentBase {
         public int id;
         public String name;
+        String pkgName;
         String type;
         ArrayList<String> includes = new ArrayList<>();
+        ArrayList<String> preDefined = new ArrayList<>();
 
-        public FieldInfo(String fieldName, String fieldSign, String type) {
+        public FieldInfo(String pkgName, String fieldName, String fieldSign, String type) {
             super(fieldSign);
 
+            this.pkgName = pkgName;
             this.name = fieldName;
 
             parseFieldSign();
@@ -241,24 +253,29 @@ public class JniClassInfo {
         }
 
         private void parseType(String type) {
-            includes.add("#include <jni.h>");
+            includes.add("#include <jni.h>\n");
+            includes.add("#include \"jni_transform.h\"\n");
             int arrayDimension = getArrayDimension(type, 0);
             if (arrayDimension > 0) {
                 int len = arrayDimension * 2;
                 type = type.substring(0, type.length() - len);
-                includes.add("#include <vector>");
+                includes.add("#include <vector>\n");
             }
             String _type;
             if (Constants.JNIType.JNI_TYPES.containsKey(type)) {
                 _type = Constants.JNIType.JNI_TYPES.get(type);
-                includes.add("#include <string>");
+                includes.add("#include <string>\n");
             } else {
                 int index = type.lastIndexOf(".");
                 if (index != -1) {
-                    String _include = type.substring(0, index)
-                            .replace(".", "_") + ".h";
-                    includes.add("#include \"" + _include + "\"");
+                    String _pkgName = type.substring(0, index);
                     _type = type.substring(index + 1);
+                    if (!pkgName.equals(_pkgName)) {
+                        String _include = _pkgName.replace(".", "_") + ".h";
+                        includes.add("#include \"" + _include + "\"\n");
+                    } else {
+                        preDefined.add("struct " + _type + ";\n");
+                    }
                 } else {
                     _type = type;
                 }
@@ -278,7 +295,7 @@ public class JniClassInfo {
         }
 
         private String createArrayType(String type) {
-            return String.format(Constants.OBJECT_ARRAY_FORMAT, type);
+            return String.format(Constants.Format.FIELD_ARRAY_FORMAT, type);
         }
     }
 

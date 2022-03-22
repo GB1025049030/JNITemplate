@@ -6,56 +6,39 @@
 #define JNITEMPLATE_NATIVE_H
 
 #include <jni.h>
+
 #include <memory>
+
+#include "javaapiheaders/ohos_apitest.h"
 #include "js_call_android_jni.h"
-#include "javaapiheaders/ohos_bundlemgr.h"
 
 namespace OHOS {
-    class APITest {
-        APITest();
+namespace APITEST {
 
-        friend DelayedSingleton<APITest>;
-    public:
-        ~APITest();
+using namespace APITEST;
 
-        int InitJavaVm(JavaVM *vm);
+class APITest {
+    APITest();
 
-        int Register(JNIEnv *env);
+    friend DelayedSingleton<APITest>;
 
-        void NativeInit(JNIEnv *env);
+public:
+    ~APITest();
 
-        void Test(JNIEnv *env);
+    int InitJavaVm(JavaVM *vm);
 
-        int InstallShellApk(InstallShellInfo *shellInfo, PackageInstalledStatus *status);
+    int Register(JNIEnv *env);
 
-        int UnInstallShellApk(std::string packageName, int userId, bool isAppend,
-                              PackageInstalledStatus *status);
+    void NativeInit(JNIEnv *env);
 
-        void GetPairBundleName(const std::string &packageName, std::string *bundleName);
+    void Test(JNIEnv *env);
 
-        void GetPairID(int32_t id, int32_t* newID);
+    void AddClassRoom(ClassRoom room);
 
-    private:
-        std::weak_ptr<JSCallAndroidJni> sJSCallAndroidJniPtr;
-    };
+private:
+    std::weak_ptr<JSCallAndroidJni> sJSCallAndroidJniPtr;
+};
+}  // namespace APITEST
+}  // namespace OHOS
 
-    class InstallShellInfoTransform : public Transform<InstallShellInfo> {
-        using Transform::Transform;
-
-    public:
-        void Extract(jobject source, InstallShellInfo *target) override;
-
-        void Convert(jobject target, InstallShellInfo *source) override;
-    };
-
-    class PackageInstalledStatusTransform : public Transform<PackageInstalledStatus> {
-        using Transform::Transform;
-
-    public:
-        void Extract(jobject source, PackageInstalledStatus *target) override;
-
-        void Convert(jobject target, PackageInstalledStatus *source) override;
-    };
-}
-
-#endif //JNITEMPLATE_NATIVE_H
+#endif  // JNITEMPLATE_NATIVE_H

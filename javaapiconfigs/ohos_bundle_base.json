@@ -1,0 +1,35 @@
+{
+  "classes":[
+    {
+      "methods":[],
+      "pkgName":"ohos/bundle/base",
+      "className":"ohos/bundle/base/ElementName",
+      "fields":[
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"abilityName_",
+          "sign":"Ljava/lang/String;",
+          "id":1
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"bundleName_",
+          "sign":"Ljava/lang/String;",
+          "id":2
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"deviceId_",
+          "sign":"Ljava/lang/String;",
+          "id":3
+        }
+      ]
+    }
+  ]
+}

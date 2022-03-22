@@ -26,10 +26,8 @@ add_library( # Sets the className of the library.
         # Provides a relative path to your source file(s).
         src/js_call_android_jni.cpp
         src/jni_info.cpp
-        src/jni_transform.cpp
         src/jni_utils.cpp
         src/harmony/jkit.cpp
-        src/test/transform.cpp
         src/native.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

@@ -8,6 +8,9 @@ java {
 }
 
 dependencies {
+    if (rootProject.useFreemePlatformJar) {
+        compileOnly files("$rootProject.sdkFreemePlatformJar")
+    }
     implementation project(path: ':annotation')
     annotationProcessor project(path: ':processor')
 }

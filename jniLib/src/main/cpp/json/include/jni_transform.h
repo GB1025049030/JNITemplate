@@ -6,26 +6,34 @@
 #define JNITEMPLATE_JNI_TRANSFORM_H
 
 #include <jni.h>
+
 #include "jni_info.h"
 
 namespace OHOS {
-    template<typename T>
-    class Transform {
-    public:
-        Transform(T *tt);
+namespace TEMPLATE {
 
-        virtual void Extract(jobject source, T *target) = 0;
+template <typename T>
+class Transform {
+public:
+    Transform(std::string name);
+    virtual void Extract(jobject source, T *target) = 0;
+    virtual void Convert(jobject target, T *source) = 0;
+    virtual std::string GetClassName();
 
-        virtual void Convert(jobject target, T *source) = 0;
+private:
+    std::string className;
+};
 
-    public:
-        T* t;
-    };
-
-    template<typename T>
-    Transform<T>::Transform(T *tt) {
-        t = tt;
-    }
+template <typename T>
+Transform<T>::Transform(std::string name) {
+    className = name;
 }
 
-#endif //JNITEMPLATE_JNI_TRANSFORM_H
+template <typename T>
+std::string Transform<T>::GetClassName() {
+    return className;
+}
+}  // namespace TEMPLATE
+}  // namespace OHOS
+
+#endif  // JNITEMPLATE_JNI_TRANSFORM_H

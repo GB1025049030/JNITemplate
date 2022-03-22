@@ -17,6 +17,6 @@ public class BundleMgrAdapter {
 
     @JNIMethod(sign = "(Ljava/lang/String;)Ljava/lang/String;", isStaticMethod = true)
     public static String getPairBundleName(String packageName) {
-        return null;
+        return "";
     }
 }

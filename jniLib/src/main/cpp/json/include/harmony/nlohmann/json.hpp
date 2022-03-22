@@ -2692,7 +2692,7 @@ Format](http://rfc7159.net/rfc7159)
         template<typename PointerType, typename std::enable_if<
                 std::is_pointer<PointerType>::value, int>::type = 0>
         auto get_ptr() noexcept -> decltype(std::declval<basic_json_t &>().get_impl_ptr(
-                std::declval<PointerType>())) {
+                static_cast<bool *>(std::declval<PointerType>()))) {
             // delegate the call to get_impl_ptr<>()
             return get_impl_ptr(static_cast<PointerType>(nullptr));
         }
