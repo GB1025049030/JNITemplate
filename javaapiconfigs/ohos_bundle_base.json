@@ -3,6 +3,181 @@
     {
       "methods":[],
       "pkgName":"ohos/bundle/base",
+      "className":"ohos/bundle/base/ApplicationInfo",
+      "fields":[
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"bundleName",
+          "sign":"Ljava/lang/String;",
+          "id":1
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"cacheDir",
+          "sign":"Ljava/lang/String;",
+          "id":2
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"codePath",
+          "sign":"Ljava/lang/String;",
+          "id":3
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"dataBaseDir",
+          "sign":"Ljava/lang/String;",
+          "id":4
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"dataDir",
+          "sign":"Ljava/lang/String;",
+          "id":5
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"description",
+          "sign":"Ljava/lang/String;",
+          "id":6
+        },
+        {
+          "flag":64,
+          "arrayDimension":0,
+          "clsName":"I",
+          "name":"descriptionId",
+          "sign":"I",
+          "id":7
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"deviceId",
+          "sign":"Ljava/lang/String;",
+          "id":8
+        },
+        {
+          "flag":1024,
+          "arrayDimension":0,
+          "clsName":"Z",
+          "name":"enabled",
+          "sign":"Z",
+          "id":9
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"entryDir",
+          "sign":"Ljava/lang/String;",
+          "id":10
+        },
+        {
+          "flag":64,
+          "arrayDimension":0,
+          "clsName":"I",
+          "name":"flags",
+          "sign":"I",
+          "id":11
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"icon",
+          "sign":"Ljava/lang/String;",
+          "id":12
+        },
+        {
+          "flag":64,
+          "arrayDimension":0,
+          "clsName":"I",
+          "name":"iconId",
+          "sign":"I",
+          "id":13
+        },
+        {
+          "flag":1024,
+          "arrayDimension":0,
+          "clsName":"Z",
+          "name":"isLauncherApp",
+          "sign":"Z",
+          "id":14
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"label",
+          "sign":"Ljava/lang/String;",
+          "id":15
+        },
+        {
+          "flag":64,
+          "arrayDimension":0,
+          "clsName":"I",
+          "name":"labelId",
+          "sign":"I",
+          "id":16
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"name",
+          "sign":"Ljava/lang/String;",
+          "id":17
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"process",
+          "sign":"Ljava/lang/String;",
+          "id":18
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"signatureKey",
+          "sign":"Ljava/lang/String;",
+          "id":19
+        },
+        {
+          "flag":64,
+          "arrayDimension":0,
+          "clsName":"I",
+          "name":"supportedModes",
+          "sign":"I",
+          "id":20
+        },
+        {
+          "flag":1024,
+          "arrayDimension":0,
+          "clsName":"Z",
+          "name":"systemApp",
+          "sign":"Z",
+          "id":21
+        }
+      ]
+    },
+    {
+      "methods":[],
+      "pkgName":"ohos/bundle/base",
       "className":"ohos/bundle/base/ElementName",
       "fields":[
         {
@@ -11,7 +186,7 @@
           "clsName":"java/lang/String",
           "name":"abilityName_",
           "sign":"Ljava/lang/String;",
-          "id":1
+          "id":22
         },
         {
           "flag":2048,
@@ -19,7 +194,7 @@
           "clsName":"java/lang/String",
           "name":"bundleName_",
           "sign":"Ljava/lang/String;",
-          "id":2
+          "id":23
         },
         {
           "flag":2048,
@@ -27,7 +202,30 @@
           "clsName":"java/lang/String",
           "name":"deviceId_",
           "sign":"Ljava/lang/String;",
-          "id":3
+          "id":24
+        }
+      ]
+    },
+    {
+      "methods":[],
+      "pkgName":"ohos/bundle/base",
+      "className":"ohos/bundle/base/ModuleInfo",
+      "fields":[
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"moduleName",
+          "sign":"Ljava/lang/String;",
+          "id":25
+        },
+        {
+          "flag":2048,
+          "arrayDimension":0,
+          "clsName":"java/lang/String",
+          "name":"moduleSourceDir",
+          "sign":"Ljava/lang/String;",
+          "id":26
         }
       ]
     }

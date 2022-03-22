@@ -3,7 +3,7 @@ package ohos.apitest;
 import com.pandon.javaapi.annotation.JNIClass;
 import com.pandon.javaapi.annotation.JNIField;
 
-import java.util.List;
+import java.util.Map;
 
 @JNIClass
 public class ClassRoom {

@@ -35,6 +35,8 @@ public class Constants {
     public static final String SYMBOL_BRACKETS_RIGHT = ")";
 
     public static final String OBJECT_STRING = "java/lang/String";
+    public static final String OBJECT_LIST = "java.util.List";
+    public static final String OBJECT_MAP = "java.util.Map";
 
     public static class JNIType {
         private static final String OBJECT_BOOLEAN = "java.lang.Boolean";
@@ -111,5 +113,7 @@ public class Constants {
         public static final int FLAG_JNI_METHOD_RETURN_BOOLEAN = 1 << 10;
         public static final int FLAG_JNI_METHOD_RETURN_STRING = 1 << 11;
         public static final int FLAG_JNI_METHOD_RETURN_OBJECT = 1 << 12;
+        public static final int FLAG_JNI_METHOD_RETURN_LIST = 1 << 13;
+        public static final int FLAG_JNI_METHOD_RETURN_MAP = 1 << 14;
     }
 }
