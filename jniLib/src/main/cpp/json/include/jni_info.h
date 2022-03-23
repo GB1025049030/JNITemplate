@@ -23,6 +23,7 @@ struct ArgumentBase {
     int32_t arrayDimension;
     std::string clsName;
     std::string sign;
+    ArgumentBase *additionalValue;
 };
 
 struct FieldInfo : public ArgumentBase {
@@ -106,6 +107,7 @@ void from_json(const nlohmann::json &jsonObject, MethodInfo &methodInfo);
 void from_json(const nlohmann::json &jsonObject, FieldInfo &fieldInfo);
 void from_json(const nlohmann::json &jsonObject, ReturnObject &returnObject);
 void from_json(const nlohmann::json &jsonObject, Argument &argument);
+void from_json(const nlohmann::json &jsonObject, ArgumentBase &argumentBase);
 bool IsStatic(int32_t type);
 bool IsNonvirtual(int32_t type);
 

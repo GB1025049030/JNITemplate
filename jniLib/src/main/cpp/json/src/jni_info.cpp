@@ -52,37 +52,75 @@ void from_json(const nlohmann::json &jsonObject, MethodInfo &methodInfo) {
 void from_json(const nlohmann::json &jsonObject, FieldInfo &fieldInfo) {
     JNI_LOGI("from_json : FieldInfo begin");
     const auto &jsonObjectEnd = jsonObject.end();
-    // fieldInfo.id = jsonObject.at("id").get<int32_t>();
-    int32_t parseResult = 0;
-    GetValueIfFindKey<int32_t>(jsonObject, jsonObjectEnd, "id", fieldInfo.id,
-                               JsonType::NUMBER, true, parseResult,
-                               ArrayType::NOT_ARRAY);
+    fieldInfo.id = jsonObject.at("id").get<int32_t>();
+    //    int32_t parseResult = 0;
+    //    GetValueIfFindKey<int32_t>(jsonObject, jsonObjectEnd, "id",
+    //    fieldInfo.id,
+    //                               JsonType::NUMBER, true, parseResult,
+    //                               ArrayType::NOT_ARRAY);
     fieldInfo.flag = jsonObject.at("flag").get<int32_t>();
     fieldInfo.arrayDimension = jsonObject.at("arrayDimension").get<int32_t>();
     fieldInfo.name = jsonObject.at("name").get<std::string>();
     fieldInfo.clsName = jsonObject.at("clsName").get<std::string>();
     fieldInfo.sign = jsonObject.at("sign").get<std::string>();
+    int32_t parseResult = 0;
+    ArgumentBase additionalValue;
+    GetValueIfFindKey<ArgumentBase>(
+        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
+        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
+    (*fieldInfo.additionalValue) = additionalValue;
     JNI_LOGI("from_json : FieldInfo end");
 }
 
 void from_json(const nlohmann::json &jsonObject, ReturnObject &returnObject) {
     JNI_LOGI("from_json : ReturnObject begin");
+    const auto &jsonObjectEnd = jsonObject.end();
     returnObject.flag = jsonObject.at("flag").get<int32_t>();
     returnObject.arrayDimension =
         jsonObject.at("arrayDimension").get<int32_t>();
     returnObject.clsName = jsonObject.at("clsName").get<std::string>();
     returnObject.sign = jsonObject.at("sign").get<std::string>();
+    int32_t parseResult = 0;
+    ArgumentBase additionalValue;
+    GetValueIfFindKey<ArgumentBase>(
+        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
+        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
+    (*returnObject.additionalValue) = additionalValue;
     JNI_LOGI("from_json : ReturnObject end");
 }
 
 void from_json(const nlohmann::json &jsonObject, Argument &argument) {
     JNI_LOGI("from_json : Argument begin");
+    const auto &jsonObjectEnd = jsonObject.end();
     argument.order = jsonObject.at("order").get<int32_t>();
     argument.flag = jsonObject.at("flag").get<int32_t>();
     argument.arrayDimension = jsonObject.at("arrayDimension").get<int32_t>();
     argument.clsName = jsonObject.at("clsName").get<std::string>();
     argument.sign = jsonObject.at("sign").get<std::string>();
+    int32_t parseResult = 0;
+    ArgumentBase additionalValue;
+    GetValueIfFindKey<ArgumentBase>(
+        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
+        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
+    (*argument.additionalValue) = additionalValue;
     JNI_LOGI("from_json : Argument end");
+}
+
+void from_json(const nlohmann::json &jsonObject, ArgumentBase &argumentBase) {
+    JNI_LOGI("from_json : ArgumentBase begin");
+    const auto &jsonObjectEnd = jsonObject.end();
+    argumentBase.flag = jsonObject.at("flag").get<int32_t>();
+    argumentBase.arrayDimension =
+        jsonObject.at("arrayDimension").get<int32_t>();
+    argumentBase.clsName = jsonObject.at("clsName").get<std::string>();
+    argumentBase.sign = jsonObject.at("sign").get<std::string>();
+    int32_t parseResult = 0;
+    ArgumentBase additionalValue;
+    GetValueIfFindKey<ArgumentBase>(
+        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
+        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
+    (*argumentBase.additionalValue) = additionalValue;
+    JNI_LOGI("from_json : ArgumentBase end");
 }
 
 bool IsStatic(int32_t type) {
