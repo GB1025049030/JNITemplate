@@ -22,7 +22,8 @@ namespace OHOS {
     Jkit::Jkit() {
         attach = 0;
         if (Jkit::javaVm_) {
-            if (JNI_EDETACHED == javaVm_->GetEnv((void **) (&jniEnv), JNI_VERSION_1_4)) {
+            if (JNI_EDETACHED ==
+                javaVm_->GetEnv((void **) (&jniEnv), JNI_VERSION_1_4)) {
                 javaVm_->AttachCurrentThread(&jniEnv, nullptr);
                 attach = 1;
             }
@@ -42,15 +43,9 @@ namespace OHOS {
         return vm;
     }
 
-    bool Jkit::IsNativeInited() {
-        return (Jkit::javaVm_ != 0);
-    }
+    bool Jkit::IsNativeInited() { return (Jkit::javaVm_ != 0); }
 
-    JNIEnv *Jkit::operator->() {
-        return jniEnv;
-    }
+    JNIEnv *Jkit::operator->() { return jniEnv; }
 
-    bool Jkit::IsValidEnv() {
-        return jniEnv != nullptr;
-    }
-} // namespace OHOS
+    bool Jkit::IsValidEnv() { return jniEnv != nullptr; }
+}  // namespace OHOS

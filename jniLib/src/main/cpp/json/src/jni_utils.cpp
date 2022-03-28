@@ -4,11 +4,244 @@
 
 #include "jni_utils.h"
 
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
+
 #include "jkit.h"
 #include "jni_log.h"
 
 namespace OHOS {
 namespace TEMPLATE {
+
+JNIUtils::JNIUtils() {
+    JNI_LOGI("instance is created");
+    sUtilClassMaps =
+        new std::map<std::string, std::vector<JavaUtilMethodInfo>>();
+    CreateClassMap();
+    sUtilJClassIDs = new std::map<std::string, jclass>();
+    sUtilJMethodIDs = new std::map<JavaUtilMethod, jmethodID>();
+    sModuleJClassIDs = new std::map<std::string, jclass>();
+    sModuleMethodInfos = new std::map<int32_t, JNIMethodInfo>();
+    sModuleFieldInfos = new std::map<int32_t, JNIFieldInfo>();
+}
+
+JNIUtils::~JNIUtils() {
+    JNI_LOGI("instance is destroyed");
+    Jkit jkit;
+    if (jkit.IsValidEnv()) {
+        JNIEnv *env = jkit.operator->();
+        for (std::map<std::string, jclass>::iterator it =
+                 sUtilJClassIDs->begin();
+             it != sUtilJClassIDs->end(); it++) {
+            if (it->second) {
+                env->DeleteGlobalRef(it->second);
+            }
+        }
+        for (std::map<std::string, jclass>::iterator it =
+                 sModuleJClassIDs->begin();
+             it != sModuleJClassIDs->end(); it++) {
+            if (it->second) {
+                env->DeleteGlobalRef(it->second);
+            }
+        }
+    }
+    delete sUtilJMethodIDs;
+    delete sUtilJClassIDs;
+    delete sUtilClassMaps;
+    delete sModuleJClassIDs;
+    delete sModuleMethodInfos;
+    delete sModuleFieldInfos;
+}
+
+int JNIUtils::InitUtilJavaClass(JNIEnv *env) {
+    std::map<std::string, std::vector<JavaUtilMethodInfo>>::iterator it;
+    for (it = sUtilClassMaps->begin(); it != sUtilClassMaps->end(); it++) {
+        auto clazzRet = env->FindClass(it->first.c_str());
+        if (!clazzRet) {
+            JNI_LOGE("InitJavaUtilList : class(%" LOG_LIMIT "s) is not exist",
+                     it->first.c_str());
+            return JNI_ERR;
+        }
+        auto clazz = (jclass)env->NewGlobalRef(clazzRet);
+        sUtilJClassIDs->insert(
+            std::pair<std::string, jclass>(it->first.c_str(), clazz));
+        for (auto info : it->second) {
+            jmethodID method =
+                env->GetMethodID(clazz, info.name.c_str(), info.sign.c_str());
+            if (!method) {
+                JNI_LOGE("InitJavaUtilList : class(%" LOG_LIMIT
+                         "s) don't have method(%" LOG_LIMIT "s)",
+                         it->first.c_str(), info.name.c_str());
+                continue;
+            }
+            sUtilJMethodIDs->insert(
+                std::pair<JavaUtilMethod, jmethodID>(info.index, method));
+        }
+    }
+    return JNI_OK;
+}
+
+int JNIUtils::InitModuleJavaClass(JNIEnv *env, const std::string &config) {
+    JNI_LOGI("InitModuleJavaClass: begin");
+    nlohmann::json jsonObject;
+    std::ifstream jsonFile(
+        "/sdcard/Android/data/com.pandon.javaapi.testannotation/files/" +
+        config);
+    jsonFile >> jsonObject;
+    from_json(jsonObject, jniInfo);
+    JNI_LOGI("InitModuleJavaClass: load config success");
+    if (!jniInfo.classes.empty()) {
+        for (auto &classInfo : jniInfo.classes) {
+            JNI_LOGI("InitModuleJavaClass: class : %" LOG_LIMIT "s",
+                     classInfo.className.c_str());
+            auto clazzRet = env->FindClass(classInfo.className.c_str());
+            if (!clazzRet) {
+                JNI_LOGE("InitModuleJavaClass : class(%" LOG_LIMIT
+                         "s) is not exist",
+                         classInfo.className.c_str());
+                continue;
+            }
+            auto clazz = (jclass)env->NewGlobalRef(clazzRet);
+            if (!clazz) {
+                JNI_LOGE("InitModuleJavaClass : class(%" LOG_LIMIT
+                         "s) is not exist",
+                         classInfo.className.c_str());
+                continue;
+            }
+            sModuleJClassIDs->insert(
+                std::pair<std::string, jclass>(classInfo.className, clazz));
+            if (!classInfo.methods.empty()) {
+                for (auto &methodInfo : classInfo.methods) {
+                    jmethodID methodID;
+                    if (JNIInfoUtil::IsStatic(
+                            methodInfo.returnObject.baseType.flag)) {
+                        methodID = env->GetStaticMethodID(
+                            clazz, methodInfo.name.c_str(),
+                            methodInfo.sign.c_str());
+                    } else {
+                        methodID =
+                            env->GetMethodID(clazz, methodInfo.name.c_str(),
+                                             methodInfo.sign.c_str());
+                    }
+                    if (!methodID) {
+                        JNI_LOGE("InitModuleJavaClass: method %" LOG_LIMIT
+                                 "s(sign: %" LOG_LIMIT "s, id = %" LOG_LIMIT
+                                 "d) is not exist",
+                                 methodInfo.name.c_str(),
+                                 methodInfo.sign.c_str(), methodInfo.id);
+                        ClearException(env);
+                        continue;
+                    }
+                    sModuleMethodInfos->insert(
+                        std::pair<int32_t, JNIMethodInfo>(
+                            methodInfo.id,
+                            JNIMethodInfo(methodID, clazz,
+                                          methodInfo.returnObject)));
+                }
+            }
+            if (!classInfo.fields.empty()) {
+                for (auto &fieldInfo : classInfo.fields) {
+                    jfieldID fieldId;
+                    JNI_LOGD("guobin: name: %s, flag: %d",
+                             fieldInfo.name.c_str(), fieldInfo.baseType.flag);
+                    if (fieldInfo.baseType.additionalValue) {
+                        JNI_LOGD("guobin: additionalValue: flag: %d",
+                                 fieldInfo.baseType.additionalValue->flag);
+                    }
+                    if (fieldInfo.baseType.additionalKey) {
+                        JNI_LOGD("guobin: additionalKey: flag: %d",
+                                 fieldInfo.baseType.additionalKey->flag);
+                    }
+                    if (JNIInfoUtil::IsStatic(fieldInfo.baseType.flag)) {
+                        fieldId = env->GetStaticFieldID(
+                            clazz, fieldInfo.name.c_str(),
+                            fieldInfo.baseType.sign.c_str());
+                    } else {
+                        fieldId =
+                            env->GetFieldID(clazz, fieldInfo.name.c_str(),
+                                            fieldInfo.baseType.sign.c_str());
+                    }
+                    if (!fieldId) {
+                        JNI_LOGE("InitModuleJavaClass: field %" LOG_LIMIT
+                                 "s(sign: %" LOG_LIMIT "s, id = %" LOG_LIMIT
+                                 "d) is not exist",
+                                 fieldInfo.name.c_str(),
+                                 fieldInfo.baseType.sign.c_str(), fieldInfo.id);
+                        ClearException(env);
+                        continue;
+                    }
+                    sModuleFieldInfos->insert(std::pair<int32_t, JNIFieldInfo>(
+                        fieldInfo.id, JNIFieldInfo(fieldId, clazz, fieldInfo)));
+                }
+            }
+        }
+    } else {
+        JNI_LOGE("InitModuleJavaClass: jniInfo is empty");
+        return JNI_ERR;
+    }
+    JNI_LOGI("InitModuleJavaClass: end");
+    return JNI_OK;
+}
+
+int JNIUtils::GetJNIMethodInfo(int32_t methodID, JNIMethodInfo *methodInfo) {
+    if (sModuleMethodInfos) {
+        if (sModuleMethodInfos->count(methodID) > 0) {
+            (*methodInfo) = sModuleMethodInfos->at(methodID);
+            if (methodInfo->classID && methodInfo->methodID) {
+                return JNI_OK;
+            }
+        }
+    }
+    JNI_LOGE("GetJNIMethodInfo: methodID(%" LOG_LIMIT "d) is not init",
+             methodID);
+    return JNI_ERR;
+}
+
+int JNIUtils::GetJNIFieldInfo(int32_t fieldID, JNIFieldInfo *fieldInfo) {
+    if (sModuleFieldInfos) {
+        if (sModuleFieldInfos->count(fieldID) > 0) {
+            (*fieldInfo) = sModuleFieldInfos->at(fieldID);
+            if (fieldInfo->classID && fieldInfo->fieldId) {
+                return JNI_OK;
+            }
+        }
+    }
+    JNI_LOGE("GetJNIFieldInfo: fieldID(%" LOG_LIMIT "d) is not init", fieldID);
+    return JNI_ERR;
+}
+
+jclass JNIUtils::GetModuleJClass(std::string name) {
+    if (sModuleJClassIDs) {
+        if (sModuleJClassIDs->count(name) > 0) {
+            return sModuleJClassIDs->at(name);
+        }
+    }
+    JNI_LOGE("GetModuleJClass : class(%" LOG_LIMIT "s) don't init",
+             JAVA_LANG_STRING);
+    return nullptr;
+}
+
+jclass JNIUtils::GetUtilJClass(std::string name) {
+    if (sUtilJClassIDs) {
+        if (sUtilJClassIDs->count(name) > 0) {
+            return sUtilJClassIDs->at(name);
+        }
+    }
+    JNI_LOGE("GetUtilJClass : class(%" LOG_LIMIT "s) don't init",
+             JAVA_LANG_STRING);
+    return nullptr;
+}
+
+jmethodID JNIUtils::GetUtilJMethodID(JavaUtilMethod id) {
+    if (sUtilJMethodIDs) {
+        if (sUtilJMethodIDs->count(id) > 0) {
+            return sUtilJMethodIDs->at(id);
+        }
+    }
+    JNI_LOGE("GetUtilJMethodID : method(%" LOG_LIMIT "d) don't init", id);
+    return nullptr;
+}
 
 void JNIUtils::ClearException(JNIEnv *env) {
     if (env->ExceptionCheck()) {
@@ -21,7 +254,7 @@ void JNIUtils::ClearException(JNIEnv *env) {
 jboolean JNIUtils::GetBooleanField(JNIEnv *env, jobject object,
                                    JNIFieldInfo *info) {
     jboolean result = JNI_FALSE;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticBooleanField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -36,7 +269,7 @@ jboolean JNIUtils::GetBooleanField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetBooleanField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                                jboolean value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticBooleanField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -50,7 +283,7 @@ void JNIUtils::SetBooleanField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 jbyte JNIUtils::GetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
     jbyte result = 0;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticByteField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -65,7 +298,7 @@ jbyte JNIUtils::GetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
 
 void JNIUtils::SetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                             jbyte value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticByteField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -79,7 +312,7 @@ void JNIUtils::SetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 jchar JNIUtils::GetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
     jchar result = 0;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticCharField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -94,7 +327,7 @@ jchar JNIUtils::GetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
 
 void JNIUtils::SetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                             jchar value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticCharField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -109,7 +342,7 @@ void JNIUtils::SetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 jshort JNIUtils::GetShortField(JNIEnv *env, jobject object,
                                JNIFieldInfo *info) {
     jshort result = 0;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticShortField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -124,7 +357,7 @@ jshort JNIUtils::GetShortField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetShortField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                              jshort value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticShortField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -138,7 +371,7 @@ void JNIUtils::SetShortField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 jint JNIUtils::GetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
     jint result = 0;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticIntField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -153,7 +386,7 @@ jint JNIUtils::GetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
 
 void JNIUtils::SetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                            jint value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticIntField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -167,7 +400,7 @@ void JNIUtils::SetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 jlong JNIUtils::GetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
     jlong result = 0;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticLongField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -182,7 +415,7 @@ jlong JNIUtils::GetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info) {
 
 void JNIUtils::SetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                             jlong value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticLongField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -197,7 +430,7 @@ void JNIUtils::SetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 jfloat JNIUtils::GetFloatField(JNIEnv *env, jobject object,
                                JNIFieldInfo *info) {
     jfloat result = 0;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticFloatField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -212,7 +445,7 @@ jfloat JNIUtils::GetFloatField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetFloatField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                              jfloat value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticFloatField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -227,7 +460,7 @@ void JNIUtils::SetFloatField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 jdouble JNIUtils::GetDoubleField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info) {
     jdouble result = 0;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticDoubleField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -242,7 +475,7 @@ jdouble JNIUtils::GetDoubleField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetDoubleField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                               jdouble value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticDoubleField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -257,7 +490,7 @@ void JNIUtils::SetDoubleField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 jobject JNIUtils::GetObjectField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info) {
     jobject result = nullptr;
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         result = env->GetStaticObjectField(info->classID, info->fieldId);
     } else {
         if (!object) {
@@ -272,7 +505,7 @@ jobject JNIUtils::GetObjectField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                               jobject value) {
-    if (IsStatic(info->fieldInfo.flag)) {
+    if (JNIInfoUtil::IsStatic(info->fieldInfo.baseType.flag)) {
         env->SetStaticObjectField(info->classID, info->fieldId, value);
     } else {
         if (!object) {
@@ -444,7 +677,7 @@ void JNIUtils::SetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 void JNIUtils::SetStringArrayField(JNIEnv *env, jobject object,
                                    JNIFieldInfo *info,
                                    std::vector<std::string> *source) {
-    jclass jstringClass = env->FindClass("java/lang/String");
+    jclass jstringClass = env->FindClass(JAVA_LANG_STRING);
     jint size = (jint)source->size();
     if (size > 0) {
         jobjectArray strArr = env->NewObjectArray(size, jstringClass, nullptr);
@@ -798,7 +1031,7 @@ void JNIUtils::ConvertJavaString(JNIEnv *env, std::string *source,
     if (!env || !source || !result) {
         return;
     }
-    jclass strClass = env->FindClass("java/lang/String");
+    jclass strClass = env->FindClass(JAVA_LANG_STRING);
     jmethodID init =
         env->GetMethodID(strClass, "<init>", "([BLjava/lang/String;)V");
     const char *str = source->c_str();
@@ -816,7 +1049,7 @@ void JNIUtils::ConvertJavaString(JNIEnv *env, std::string const *source,
     if (!env || !source || !result) {
         return;
     }
-    jclass strClass = env->FindClass("java/lang/String");
+    jclass strClass = env->FindClass(JAVA_LANG_STRING);
     jmethodID init =
         env->GetMethodID(strClass, "<init>", "([BLjava/lang/String;)V");
     const char *str = source->c_str();
@@ -834,7 +1067,7 @@ void JNIUtils::ConvertJavaString(JNIEnv *env, const char *source,
     if (!env || !source || !result) {
         return;
     }
-    jclass strClass = env->FindClass("java/lang/String");
+    jclass strClass = env->FindClass(JAVA_LANG_STRING);
     jmethodID init =
         env->GetMethodID(strClass, "<init>", "([BLjava/lang/String;)V");
     jbyteArray bytes = env->NewByteArray((jsize)strlen(source));
@@ -865,7 +1098,7 @@ jobject JNIUtils::CallJavaObjectMethod(JNIEnv *env,
                                        JNIMethodInfo const *methodInfo,
                                        jobject holder, jvalue *param) {
     jobject ret = nullptr;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticObjectMethodA(methodInfo->classID,
                                            methodInfo->methodID, param);
         ClearException(env);
@@ -884,7 +1117,7 @@ jobject JNIUtils::CallJavaObjectMethod(JNIEnv *env,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualObjectMethodA(object, methodInfo->classID,
                                                    methodInfo->methodID, param);
         } else {
@@ -899,7 +1132,7 @@ jboolean JNIUtils::CallJavaBooleanMethod(JNIEnv *env,
                                          JNIMethodInfo const *methodInfo,
                                          jobject holder, jvalue *param) {
     jboolean ret = JNI_FALSE;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticBooleanMethodA(methodInfo->classID,
                                             methodInfo->methodID, param);
         ClearException(env);
@@ -918,7 +1151,7 @@ jboolean JNIUtils::CallJavaBooleanMethod(JNIEnv *env,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualBooleanMethodA(
                 object, methodInfo->classID, methodInfo->methodID, param);
         } else {
@@ -932,7 +1165,7 @@ jboolean JNIUtils::CallJavaBooleanMethod(JNIEnv *env,
 jbyte JNIUtils::CallJavaByteMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                    jobject holder, jvalue *param) {
     jbyte ret = 0;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticByteMethodA(methodInfo->classID,
                                          methodInfo->methodID, param);
         ClearException(env);
@@ -951,7 +1184,7 @@ jbyte JNIUtils::CallJavaByteMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualByteMethodA(object, methodInfo->classID,
                                                  methodInfo->methodID, param);
         } else {
@@ -965,7 +1198,7 @@ jbyte JNIUtils::CallJavaByteMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
 jchar JNIUtils::CallJavaCharMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                    jobject holder, jvalue *param) {
     jchar ret = 0;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticCharMethodA(methodInfo->classID,
                                          methodInfo->methodID, param);
         ClearException(env);
@@ -984,7 +1217,7 @@ jchar JNIUtils::CallJavaCharMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualCharMethodA(object, methodInfo->classID,
                                                  methodInfo->methodID, param);
         } else {
@@ -999,7 +1232,7 @@ jshort JNIUtils::CallJavaShortMethod(JNIEnv *env,
                                      JNIMethodInfo const *methodInfo,
                                      jobject holder, jvalue *param) {
     jshort ret = 0;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticShortMethodA(methodInfo->classID,
                                           methodInfo->methodID, param);
         ClearException(env);
@@ -1018,7 +1251,7 @@ jshort JNIUtils::CallJavaShortMethod(JNIEnv *env,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualShortMethodA(object, methodInfo->classID,
                                                   methodInfo->methodID, param);
         } else {
@@ -1032,7 +1265,7 @@ jshort JNIUtils::CallJavaShortMethod(JNIEnv *env,
 jint JNIUtils::CallJavaIntMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                  jobject holder, jvalue *param) {
     jint ret = 0;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticIntMethodA(methodInfo->classID,
                                         methodInfo->methodID, param);
         ClearException(env);
@@ -1051,7 +1284,7 @@ jint JNIUtils::CallJavaIntMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualIntMethodA(object, methodInfo->classID,
                                                 methodInfo->methodID, param);
         } else {
@@ -1065,7 +1298,7 @@ jint JNIUtils::CallJavaIntMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
 jlong JNIUtils::CallJavaLongMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                    jobject holder, jvalue *param) {
     jlong ret = 0;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticLongMethodA(methodInfo->classID,
                                          methodInfo->methodID, param);
         ClearException(env);
@@ -1084,7 +1317,7 @@ jlong JNIUtils::CallJavaLongMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualLongMethodA(object, methodInfo->classID,
                                                  methodInfo->methodID, param);
         } else {
@@ -1099,7 +1332,7 @@ jfloat JNIUtils::CallJavaFloatMethod(JNIEnv *env,
                                      JNIMethodInfo const *methodInfo,
                                      jobject holder, jvalue *param) {
     jfloat ret = 0;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticFloatMethodA(methodInfo->classID,
                                           methodInfo->methodID, param);
         ClearException(env);
@@ -1118,7 +1351,7 @@ jfloat JNIUtils::CallJavaFloatMethod(JNIEnv *env,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualFloatMethodA(object, methodInfo->classID,
                                                   methodInfo->methodID, param);
         } else {
@@ -1133,7 +1366,7 @@ jdouble JNIUtils::CallJavaDoubleMethod(JNIEnv *env,
                                        JNIMethodInfo const *methodInfo,
                                        jobject holder, jvalue *param) {
     jdouble ret = 0;
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         ret = env->CallStaticDoubleMethodA(methodInfo->classID,
                                            methodInfo->methodID, param);
         ClearException(env);
@@ -1152,7 +1385,7 @@ jdouble JNIUtils::CallJavaDoubleMethod(JNIEnv *env,
                 "no-argument constructor");
             return ret;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             ret = env->CallNonvirtualDoubleMethodA(object, methodInfo->classID,
                                                    methodInfo->methodID, param);
         } else {
@@ -1165,7 +1398,7 @@ jdouble JNIUtils::CallJavaDoubleMethod(JNIEnv *env,
 
 void JNIUtils::CallJavaVoidMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                   jobject holder, jvalue *param) {
-    if (IsStatic(methodInfo->returnObject.flag)) {
+    if (JNIInfoUtil::IsStatic(methodInfo->returnObject.baseType.flag)) {
         env->CallStaticVoidMethodA(methodInfo->classID, methodInfo->methodID,
                                    param);
         ClearException(env);
@@ -1184,7 +1417,7 @@ void JNIUtils::CallJavaVoidMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                 "no-argument constructor");
             return;
         }
-        if (IsNonvirtual(methodInfo->returnObject.flag)) {
+        if (JNIInfoUtil::IsNonvirtual(methodInfo->returnObject.baseType.flag)) {
             env->CallNonvirtualVoidMethodA(object, methodInfo->classID,
                                            methodInfo->methodID, param);
         } else {
@@ -1199,7 +1432,7 @@ void JNIUtils::CallJavaStringMethod(JNIEnv *env,
                                     jobject holder, jvalue *param,
                                     std::string *result) {
     auto str =
-        (jstring)JNIUtils::CallJavaObjectMethod(env, methodInfo, holder, param);
+        (jstring)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!str) {
         JNI_LOGE("CallJavaMethod: str is null");
         return;
@@ -1330,5 +1563,151 @@ void JNIUtils::CallJavaStringArrayMethod(JNIEnv *env,
     env->DeleteLocalRef(arr);
 }
 
+jobject JNIUtils::NewObject(JNIEnv *env, std::string *className) {
+    jobject result = nullptr;
+    if (className && !className->empty()) {
+        jclass clazz = GetModuleJClass(*className);
+        if (!clazz) {
+            clazz = GetUtilJClass(*className);
+        }
+        if (clazz) {
+            jmethodID init = env->GetMethodID(clazz, "<init>", "()V");
+            result = env->NewObject(clazz, init);
+        }
+    } else {
+        JNI_LOGE("NewObject : className is null or empty");
+    }
+    return result;
+}
+
+void JNIUtils::CreateClassMap() {
+    // TODO: JAVA_LANG_STRING
+    std::vector<JavaUtilMethodInfo> java_lang_String{
+        JavaUtilMethodInfo(JavaUtilMethod::StringInit, "<init>", "()V")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_STRING, java_lang_String));
+    // TODO: JAVA_LANG_BOOLEAN
+    std::vector<JavaUtilMethodInfo> java_lang_Boolean{
+        JavaUtilMethodInfo(JavaUtilMethod::BooleanInit, "<init>", "(Z)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Boolean_booleanValue, "booleanValue",
+                           "()Z")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_BOOLEAN, java_lang_Boolean));
+    // TODO: JAVA_LANG_BYTE
+    std::vector<JavaUtilMethodInfo> java_lang_Byte{
+        JavaUtilMethodInfo(JavaUtilMethod::ByteInit, "<init>", "(B)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Byte_byteValue, "byteValue", "()B")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_BYTE, java_lang_Byte));
+    // TODO: JAVA_LANG_CHARACTER
+    std::vector<JavaUtilMethodInfo> java_lang_Character{
+        JavaUtilMethodInfo(JavaUtilMethod::CharacterInit, "<init>", "(C)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Character_charValue, "charValue",
+                           "()C")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_CHARACTER, java_lang_Character));
+    // TODO: JAVA_LANG_SHORT
+    std::vector<JavaUtilMethodInfo> java_lang_Short{
+        JavaUtilMethodInfo(JavaUtilMethod::ShortInit, "<init>", "(S)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Short_shortValue, "shortValue",
+                           "()S")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_SHORT, java_lang_Short));
+    // TODO: JAVA_LANG_INTEGER
+    std::vector<JavaUtilMethodInfo> java_lang_Integer{
+        JavaUtilMethodInfo(JavaUtilMethod::IntegerInit, "<init>", "(I)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Integer_intValue, "intValue",
+                           "()I")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_INTEGER, java_lang_Integer));
+    // TODO: JAVA_LANG_LONG
+    std::vector<JavaUtilMethodInfo> java_lang_Long{
+        JavaUtilMethodInfo(JavaUtilMethod::LongInit, "<init>", "(J)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Long_longValue, "longValue", "()J")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_LONG, java_lang_Long));
+    // TODO: JAVA_LANG_FLOAT
+    std::vector<JavaUtilMethodInfo> java_lang_Float{
+        JavaUtilMethodInfo(JavaUtilMethod::FloatInit, "<init>", "(F)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Float_floatValue, "floatValue",
+                           "()F")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_FLOAT, java_lang_Float));
+    // TODO: JAVA_LANG_DOUBLE
+    std::vector<JavaUtilMethodInfo> java_lang_Double{
+        JavaUtilMethodInfo(JavaUtilMethod::DoubleInit, "<init>", "(D)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Double_doubleValue, "doubleValue",
+                           "()D")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_LANG_DOUBLE, java_lang_Double));
+    // TODO: JAVA_UTIL_LIST
+    std::vector<JavaUtilMethodInfo> java_lang_List{
+        JavaUtilMethodInfo(JavaUtilMethod::ListInit, "<init>", "()V"),
+        JavaUtilMethodInfo(JavaUtilMethod::List_add, "add",
+                           "(ILjava/lang/Object;)V"),
+        JavaUtilMethodInfo(JavaUtilMethod::List_get, "get",
+                           "(I)Ljava/lang/Object;"),
+        JavaUtilMethodInfo(JavaUtilMethod::List_size, "size", "()I")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_UTIL_LIST, java_lang_List));
+    // TODO: JAVA_UTIL_MAP
+    std::vector<JavaUtilMethodInfo> java_lang_Map{
+        JavaUtilMethodInfo(JavaUtilMethod::MapInit, "<init>", "()V"),
+        JavaUtilMethodInfo(
+            JavaUtilMethod::Map_put, "put",
+            "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
+        JavaUtilMethodInfo(JavaUtilMethod::Map_get, "get",
+                           "(Ljava/lang/Object;)Ljava/lang/Object;"),
+        JavaUtilMethodInfo(JavaUtilMethod::Map_size, "size", "()I"),
+        JavaUtilMethodInfo(JavaUtilMethod::Map_entrySet, "entrySet",
+                           "()Ljava/util/Set;")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(JAVA_UTIL_MAP,
+                                                                java_lang_Map));
+    // TODO: JAVA_UTIL_SET
+    std::vector<JavaUtilMethodInfo> java_util_Set{
+        JavaUtilMethodInfo(JavaUtilMethod::SetInit, "<init>", "()V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Set_iterator, "iterator",
+                           "()Ljava/util/Iterator;")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(JAVA_UTIL_SET,
+                                                                java_util_Set));
+    // TODO: JAVA_UTIL_ITERATOR
+    std::vector<JavaUtilMethodInfo> java_util_Iterator{
+        JavaUtilMethodInfo(JavaUtilMethod::IteratorInit, "<init>", "()V"),
+        JavaUtilMethodInfo(JavaUtilMethod::Iterator_hasNext, "hasNext", "()Z"),
+        JavaUtilMethodInfo(JavaUtilMethod::Iterator_next, "next",
+                           "()Ljava/lang/Object;")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_UTIL_ITERATOR, java_util_Iterator));
+    // TODO: JAVA_UTIL_MAP_ENTRY
+    std::vector<JavaUtilMethodInfo> java_util_map_entry{
+        JavaUtilMethodInfo(JavaUtilMethod::Map_Entry_getKey, "getKey",
+                           "()Ljava/lang/Object;"),
+        JavaUtilMethodInfo(JavaUtilMethod::Map_Entry_getValue, "getValue",
+                           "()Ljava/lang/Object;")};
+    sUtilClassMaps->insert(
+        std::pair<std::string, std::vector<JavaUtilMethodInfo>>(
+            JAVA_UTIL_MAP_ENTRY, java_util_map_entry));
+}
+
+int32_t JNITest(JNIEnv *env) {
+    auto clazzRet = env->FindClass(JAVA_LANG_STRING);
+    auto clazz = (jclass)env->NewGlobalRef(clazzRet);
+    jmethodID list_init =
+        env->GetMethodID(clazz, "<init>", "(Ljava/lang/String;)V");
+    return JNI_ERR;
+}
 }  // namespace TEMPLATE
 }  // namespace OHOS

@@ -18,23 +18,28 @@
 namespace OHOS {
 namespace TEMPLATE {
 
-struct ArgumentBase {
+struct BaseType {
     int32_t flag;
     int32_t arrayDimension;
     std::string clsName;
     std::string sign;
-    ArgumentBase *additionalValue;
+    BaseType *additionalKey = nullptr;
+    BaseType *additionalValue = nullptr;
 };
 
-struct FieldInfo : public ArgumentBase {
+struct FieldInfo {
     int32_t id;
     std::string name;
+    BaseType baseType;
 };
 
-struct ReturnObject : public ArgumentBase {};
+struct ReturnObject {
+    BaseType baseType;
+};
 
-struct Argument : public ArgumentBase {
+struct Argument {
     int32_t order;
+    BaseType baseType;
 };
 
 struct MethodInfo {
@@ -102,16 +107,44 @@ typedef union {
 } cvalue;
 
 void from_json(const nlohmann::json &jsonObject, JNIInfo &jniInfo);
-void from_json(const nlohmann::json &jsonObject, ClassInfo &classInfo);
-void from_json(const nlohmann::json &jsonObject, MethodInfo &methodInfo);
-void from_json(const nlohmann::json &jsonObject, FieldInfo &fieldInfo);
-void from_json(const nlohmann::json &jsonObject, ReturnObject &returnObject);
-void from_json(const nlohmann::json &jsonObject, Argument &argument);
-void from_json(const nlohmann::json &jsonObject, ArgumentBase &argumentBase);
-bool IsStatic(int32_t type);
-bool IsNonvirtual(int32_t type);
 
-MethodFlag GetReturnType(int32_t type);
+void from_json(const nlohmann::json &jsonObject, ClassInfo &classInfo);
+
+void from_json(const nlohmann::json &jsonObject, MethodInfo &methodInfo);
+
+void from_json(const nlohmann::json &jsonObject, FieldInfo &fieldInfo);
+
+void from_json(const nlohmann::json &jsonObject, ReturnObject &returnObject);
+
+void from_json(const nlohmann::json &jsonObject, Argument &argument);
+
+void from_json(const nlohmann::json &jsonObject, BaseType &baseType);
+
+class JNIInfoUtil {
+public:
+    static bool IsStatic(int32_t type);
+
+    static bool IsNonvirtual(int32_t type);
+
+    static bool CheckIsType(BaseType *type, MethodFlag targetFlag,
+                            int32_t *result);
+
+    static bool CheckIsTypeArray(BaseType *type, MethodFlag targetFlag,
+                                 int32_t *result);
+
+    static bool CheckIsTypeList(BaseType *type, MethodFlag targetFlag,
+                                int32_t *result);
+
+    static bool NeedTransform(int32_t type);
+
+private:
+    static bool IsList(int32_t type);
+
+    static bool IsMap(int32_t type);
+
+    static MethodFlag GetReturnType(int32_t type);
+};
+
 }  // namespace TEMPLATE
 }  // namespace OHOS
 

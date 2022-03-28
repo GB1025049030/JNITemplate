@@ -53,39 +53,21 @@ void from_json(const nlohmann::json &jsonObject, FieldInfo &fieldInfo) {
     JNI_LOGI("from_json : FieldInfo begin");
     const auto &jsonObjectEnd = jsonObject.end();
     fieldInfo.id = jsonObject.at("id").get<int32_t>();
-    //    int32_t parseResult = 0;
-    //    GetValueIfFindKey<int32_t>(jsonObject, jsonObjectEnd, "id",
-    //    fieldInfo.id,
-    //                               JsonType::NUMBER, true, parseResult,
-    //                               ArrayType::NOT_ARRAY);
-    fieldInfo.flag = jsonObject.at("flag").get<int32_t>();
-    fieldInfo.arrayDimension = jsonObject.at("arrayDimension").get<int32_t>();
     fieldInfo.name = jsonObject.at("name").get<std::string>();
-    fieldInfo.clsName = jsonObject.at("clsName").get<std::string>();
-    fieldInfo.sign = jsonObject.at("sign").get<std::string>();
     int32_t parseResult = 0;
-    ArgumentBase additionalValue;
-    GetValueIfFindKey<ArgumentBase>(
-        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
-        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
-    (*fieldInfo.additionalValue) = additionalValue;
+    GetValueIfFindKey<BaseType>(jsonObject, jsonObjectEnd, "baseType",
+                                fieldInfo.baseType, JsonType::OBJECT, false,
+                                parseResult, ArrayType::NOT_ARRAY);
     JNI_LOGI("from_json : FieldInfo end");
 }
 
 void from_json(const nlohmann::json &jsonObject, ReturnObject &returnObject) {
     JNI_LOGI("from_json : ReturnObject begin");
     const auto &jsonObjectEnd = jsonObject.end();
-    returnObject.flag = jsonObject.at("flag").get<int32_t>();
-    returnObject.arrayDimension =
-        jsonObject.at("arrayDimension").get<int32_t>();
-    returnObject.clsName = jsonObject.at("clsName").get<std::string>();
-    returnObject.sign = jsonObject.at("sign").get<std::string>();
     int32_t parseResult = 0;
-    ArgumentBase additionalValue;
-    GetValueIfFindKey<ArgumentBase>(
-        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
-        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
-    (*returnObject.additionalValue) = additionalValue;
+    GetValueIfFindKey<BaseType>(jsonObject, jsonObjectEnd, "baseType",
+                                returnObject.baseType, JsonType::OBJECT, false,
+                                parseResult, ArrayType::NOT_ARRAY);
     JNI_LOGI("from_json : ReturnObject end");
 }
 
@@ -93,47 +75,95 @@ void from_json(const nlohmann::json &jsonObject, Argument &argument) {
     JNI_LOGI("from_json : Argument begin");
     const auto &jsonObjectEnd = jsonObject.end();
     argument.order = jsonObject.at("order").get<int32_t>();
-    argument.flag = jsonObject.at("flag").get<int32_t>();
-    argument.arrayDimension = jsonObject.at("arrayDimension").get<int32_t>();
-    argument.clsName = jsonObject.at("clsName").get<std::string>();
-    argument.sign = jsonObject.at("sign").get<std::string>();
     int32_t parseResult = 0;
-    ArgumentBase additionalValue;
-    GetValueIfFindKey<ArgumentBase>(
-        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
-        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
-    (*argument.additionalValue) = additionalValue;
+    GetValueIfFindKey<BaseType>(jsonObject, jsonObjectEnd, "baseType",
+                                argument.baseType, JsonType::OBJECT, false,
+                                parseResult, ArrayType::NOT_ARRAY);
     JNI_LOGI("from_json : Argument end");
 }
 
-void from_json(const nlohmann::json &jsonObject, ArgumentBase &argumentBase) {
-    JNI_LOGI("from_json : ArgumentBase begin");
-    const auto &jsonObjectEnd = jsonObject.end();
-    argumentBase.flag = jsonObject.at("flag").get<int32_t>();
-    argumentBase.arrayDimension =
-        jsonObject.at("arrayDimension").get<int32_t>();
-    argumentBase.clsName = jsonObject.at("clsName").get<std::string>();
-    argumentBase.sign = jsonObject.at("sign").get<std::string>();
+void from_json(const nlohmann::json &jsonObject, BaseType &baseType) {
+    JNI_LOGI("from_json : BaseType begin");
     int32_t parseResult = 0;
-    ArgumentBase additionalValue;
-    GetValueIfFindKey<ArgumentBase>(
-        jsonObject, jsonObjectEnd, "additionalValue", additionalValue,
-        JsonType::OBJECT, false, parseResult, ArrayType::NOT_ARRAY);
-    (*argumentBase.additionalValue) = additionalValue;
-    JNI_LOGI("from_json : ArgumentBase end");
+    const auto &jsonObjectEnd = jsonObject.end();
+    baseType.flag = jsonObject.at("flag").get<int32_t>();
+    baseType.arrayDimension = jsonObject.at("arrayDimension").get<int32_t>();
+    baseType.clsName = jsonObject.at("clsName").get<std::string>();
+    baseType.sign = jsonObject.at("sign").get<std::string>();
+    if (jsonObject.find("additionalKey") != jsonObjectEnd) {
+        parseResult = 0;
+        baseType.additionalKey = new BaseType();
+        GetValueIfFindKey<BaseType>(jsonObject, jsonObjectEnd, "additionalKey",
+                                    (*baseType.additionalKey), JsonType::OBJECT,
+                                    true, parseResult, ArrayType::NOT_ARRAY);
+    }
+    if (jsonObject.find("additionalValue") != jsonObjectEnd) {
+        parseResult = 0;
+        baseType.additionalValue = new BaseType();
+        GetValueIfFindKey<BaseType>(
+            jsonObject, jsonObjectEnd, "additionalValue",
+            (*baseType.additionalValue), JsonType::OBJECT, true, parseResult,
+            ArrayType::NOT_ARRAY);
+    }
+    JNI_LOGI("from_json : BaseType end");
 }
 
-bool IsStatic(int32_t type) {
+bool JNIInfoUtil::IsStatic(int32_t type) {
     auto flag = static_cast<int32_t>(MethodFlag::FLAG_JNI_METHOD_IS_STATIC);
     return (type & flag) == flag;
 }
 
-bool IsNonvirtual(int32_t type) {
+bool JNIInfoUtil::IsNonvirtual(int32_t type) {
     auto flag = static_cast<int32_t>(MethodFlag::FLAG_JNI_METHOD_IS_NONVIRTUAL);
     return (type & flag) == flag;
 }
 
-MethodFlag GetReturnType(int32_t type) {
+bool JNIInfoUtil::CheckIsType(BaseType *type, MethodFlag targetFlag,
+                              int32_t *result) {
+    MethodFlag flag = GetReturnType(type->flag);
+    (*result) = static_cast<int32_t>(flag);
+    return flag == targetFlag && type->arrayDimension == 0;
+}
+
+bool JNIInfoUtil::CheckIsTypeArray(BaseType *type, MethodFlag targetFlag,
+                                   int32_t *result) {
+    MethodFlag flag = GetReturnType(type->flag);
+    (*result) = static_cast<int32_t>(flag);
+    return flag == targetFlag && type->arrayDimension == 1;
+}
+
+bool JNIInfoUtil::CheckIsTypeList(BaseType *type, MethodFlag targetFlag,
+                                  int32_t *result) {
+    int32_t flag = static_cast<int32_t>(GetReturnType(type->flag));
+    (*result) = static_cast<int32_t>(flag);
+    if (IsList(flag)) {
+        if (type->additionalValue) {
+            JNI_LOGW("CheckIsTypeList: additionalValue.flag = %" LOG_LIMIT "d",
+                     type->additionalValue->flag);
+            int32_t additionalValueFlag = static_cast<int32_t>(
+                GetReturnType(type->additionalValue->flag));
+            return additionalValueFlag == static_cast<int32_t>(targetFlag);
+        }
+    }
+    return false;
+}
+
+bool JNIInfoUtil::NeedTransform(int32_t type) {
+    return type ==
+           static_cast<int32_t>(MethodFlag::FLAG_JNI_METHOD_RETURN_OBJECT);
+}
+
+bool JNIInfoUtil::IsList(int32_t type) {
+    auto flag = static_cast<int32_t>(MethodFlag::FLAG_JNI_METHOD_RETURN_LIST);
+    return (type & flag) == flag;
+}
+
+bool JNIInfoUtil::IsMap(int32_t type) {
+    auto flag = static_cast<int32_t>(MethodFlag::FLAG_JNI_METHOD_RETURN_MAP);
+    return (type & flag) == flag;
+}
+
+MethodFlag JNIInfoUtil::GetReturnType(int32_t type) {
     int32_t flag =
         static_cast<int32_t>(MethodFlag::FLAG_JNI_METHOD_RETURN_VOID) - 1;
     return static_cast<MethodFlag>(type & (~flag));

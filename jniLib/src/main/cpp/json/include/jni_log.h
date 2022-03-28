@@ -9,7 +9,7 @@
 
 namespace OHOS {
 namespace TEMPLATE {
-#define LIMIT ""
+#define LOG_LIMIT ""
 
 }  // namespace TEMPLATE
 }  // namespace OHOS

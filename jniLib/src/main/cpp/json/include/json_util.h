@@ -41,7 +41,7 @@ void CheckArrayType(const nlohmann::json &jsonObject, const std::string &key,
         case ArrayType::STRING:
             for (const auto &array : arrays) {
                 if (!array.is_string()) {
-                    JNI_LOGD("array %" LIMIT "s is not string returnObject",
+                    JNI_LOGD("array %" LOG_LIMIT "s is not string returnObject",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                 }
@@ -53,7 +53,7 @@ void CheckArrayType(const nlohmann::json &jsonObject, const std::string &key,
         case ArrayType::OBJECT:
             for (const auto &array : arrays) {
                 if (!array.is_object()) {
-                    JNI_LOGD("array %" LIMIT "s is not object returnObject",
+                    JNI_LOGD("array %" LOG_LIMIT "s is not object returnObject",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                     break;
@@ -66,7 +66,7 @@ void CheckArrayType(const nlohmann::json &jsonObject, const std::string &key,
         case ArrayType::NUMBER:
             for (const auto &array : arrays) {
                 if (!array.is_number()) {
-                    JNI_LOGD("array %" LIMIT "s is not number returnObject",
+                    JNI_LOGD("array %" LOG_LIMIT "s is not number returnObject",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                 }
@@ -76,11 +76,11 @@ void CheckArrayType(const nlohmann::json &jsonObject, const std::string &key,
             }
             break;
         case ArrayType::NOT_ARRAY:
-            JNI_LOGD("array %" LIMIT "s is not string returnObject",
+            JNI_LOGD("array %" LOG_LIMIT "s is not string returnObject",
                      key.c_str());
             break;
         default:
-            JNI_LOGD("array %" LIMIT "s returnObject error", key.c_str());
+            JNI_LOGD("array %" LOG_LIMIT "s returnObject error", key.c_str());
             break;
     }
 }
@@ -98,7 +98,8 @@ void GetValueIfFindKey(
         switch (jsonType) {
             case JsonType::BOOLEAN:
                 if (!jsonObject.at(key).is_boolean()) {
-                    JNI_LOGD("returnObject is error %" LIMIT "s is not boolean",
+                    JNI_LOGD("returnObject is error %" LOG_LIMIT
+                             "s is not boolean",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                     break;
@@ -107,7 +108,8 @@ void GetValueIfFindKey(
                 break;
             case JsonType::NUMBER:
                 if (!jsonObject.at(key).is_number()) {
-                    JNI_LOGD("returnObject is error %" LIMIT "s is not number",
+                    JNI_LOGD("returnObject is error %" LOG_LIMIT
+                             "s is not number",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                     break;
@@ -116,16 +118,19 @@ void GetValueIfFindKey(
                 break;
             case JsonType::OBJECT:
                 if (!jsonObject.at(key).is_object()) {
-                    JNI_LOGD("returnObject is error %" LIMIT "s is not object",
+                    JNI_LOGD("returnObject is error %" LOG_LIMIT
+                             "s is not object",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                     break;
                 }
+                // JNI_LOGI("returnObject key is %" LOG_LIMIT "s", key.c_str());
                 data = jsonObject.at(key).get<T>();
                 break;
             case JsonType::ARRAY:
                 if (!jsonObject.at(key).is_array()) {
-                    JNI_LOGD("returnObject is error %" LIMIT "s is not array",
+                    JNI_LOGD("returnObject is error %" LOG_LIMIT
+                             "s is not array",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                     break;
@@ -135,7 +140,8 @@ void GetValueIfFindKey(
                 break;
             case JsonType::STRING:
                 if (!jsonObject.at(key).is_string()) {
-                    JNI_LOGD("returnObject is error %" LIMIT "s is not string",
+                    JNI_LOGD("returnObject is error %" LOG_LIMIT
+                             "s is not string",
                              key.c_str());
                     parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
                     break;
@@ -143,18 +149,19 @@ void GetValueIfFindKey(
                 data = jsonObject.at(key).get<T>();
                 break;
             case JsonType::NULLABLE:
-                JNI_LOGD("returnObject is error %" LIMIT "s is nullable",
+                JNI_LOGD("returnObject is error %" LOG_LIMIT "s is nullable",
                          key.c_str());
                 break;
             default:
-                JNI_LOGD("returnObject is error %" LIMIT "s is not jsonType",
+                JNI_LOGD("returnObject is error %" LOG_LIMIT
+                         "s is not jsonType",
                          key.c_str());
                 parseResult = ERR_JNI_PARSE_PROFILE_PROP_TYPE_ERROR;
         }
         return;
     }
     if (isNecessary) {
-        JNI_LOGD("profile prop %" LIMIT "s is mission", key.c_str());
+        JNI_LOGD("profile prop %" LOG_LIMIT "s is mission", key.c_str());
         parseResult = ERR_JNI_PARSE_PROFILE_MISSING_PROP;
     }
 }

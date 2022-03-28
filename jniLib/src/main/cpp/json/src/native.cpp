@@ -73,9 +73,6 @@ void APITest::NativeInit(JNIEnv *env) {
         if (auto tmp = sJSCallAndroidJniPtr.lock()) {
             JNI_LOGI("APITest : NativeInit : work");
             tmp->NativeInit(env, JSON_FILE_OHOS_APITEST);
-            // std::shared_ptr<BundleMgrJni> sBundleMgrJniPtr =
-            // DelayedSingleton<BundleMgrJni>::GetInstance();
-            // DelayedSingleton<BundleMgrJniAdapter>::GetInstance()->SetBundleMgrJni(sBundleMgrJniPtr);
         }
         JNI_LOGI("APITest : NativeInit : end");
     }
@@ -128,7 +125,14 @@ void TransformStudent::Convert(jobject target, Student *source) {
                             &(source->name));
     instance->SetFieldValue(
         target, static_cast<int32_t>(Student_FIELD_CODE::age), &(source->age));
-    JNI_LOGI("TransformStudent : Convert : name = %s", source->name.c_str());
+    JNI_LOGI("TransformStudent : CreateObject : name = %s",
+             source->name.c_str());
+}
+
+jobject TransformStudent::CreateObject(Student *source) {
+    std::shared_ptr<JSCallAndroidJni> instance =
+            DelayedSingleton<JSCallAndroidJni>::GetInstance();
+    return instance->NewObject(JAVA_BEAN_Student);
 }
 
 void TransformClassRoom::Extract(jobject source, ClassRoom *target) {
@@ -144,7 +148,7 @@ void TransformClassRoom::Extract(jobject source, ClassRoom *target) {
 }
 
 void TransformClassRoom::Convert(jobject target, ClassRoom *source) {
-    JNI_LOGI("TransformClassRoom : Convert : begin");
+    JNI_LOGI("TransformClassRoom : CreateObject : begin");
     std::shared_ptr<JSCallAndroidJni> instance =
         DelayedSingleton<JSCallAndroidJni>::GetInstance();
     instance->SetFieldValue(target,
@@ -154,7 +158,13 @@ void TransformClassRoom::Convert(jobject target, ClassRoom *source) {
     instance->SetFieldValue(
         target, static_cast<int32_t>(ClassRoom_FIELD_CODE::students),
         &(source->students), &transformStudent);
-    JNI_LOGI("TransformClassRoom : Convert : end");
+    JNI_LOGI("TransformClassRoom : CreateObject : end");
+}
+
+jobject TransformClassRoom::CreateObject(ClassRoom *source) {
+    std::shared_ptr<JSCallAndroidJni> instance =
+            DelayedSingleton<JSCallAndroidJni>::GetInstance();
+    return instance->NewObject(JAVA_BEAN_ClassRoom);
 }
 }  // namespace APITEST
 }  // namespace OHOS

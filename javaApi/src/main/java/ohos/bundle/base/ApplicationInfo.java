@@ -3,6 +3,9 @@ package ohos.bundle.base;
 import com.pandon.javaapi.annotation.JNIClass;
 import com.pandon.javaapi.annotation.JNIField;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @JNIClass
 public class ApplicationInfo {
     @JNIField(sign = "Ljava/lang/String;")
@@ -47,7 +50,10 @@ public class ApplicationInfo {
     private int descriptionId;
     @JNIField(sign = "I")
     private int flags;
-//    private List<String> permissions = new ArrayList<>(0);
-//    private List<String> moduleSourceDirs = new ArrayList<>(0);
-//    private List<ModuleInfo> moduleInfos = new ArrayList<>(0);
+    @JNIField(sign = "Ljava/util/List;")
+    private List<String> permissions = new ArrayList<>(0);
+    @JNIField(sign = "Ljava/util/List;")
+    private List<String> moduleSourceDirs = new ArrayList<>(0);
+    @JNIField(sign = "Ljava/util/List;")
+    private List<ModuleInfo> moduleInfos = new ArrayList<>(0);
 }

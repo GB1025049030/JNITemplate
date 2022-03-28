@@ -41,11 +41,11 @@ public class BaseType {
         }
         String _clsName;
         if (sign.endsWith(Constants.SYMBOL_END)) {
-            if (sign.contains(Constants.OBJECT_STRING)) {
+            if (sign.contains(Constants.OBJECT_STRING2)) {
                 _flag |= MethodFlag.FLAG_JNI_METHOD_RETURN_STRING;
-            } else if (sign.contains(Constants.OBJECT_LIST)) {
+            } else if (sign.contains(Constants.OBJECT_LIST2)) {
                 _flag |= MethodFlag.FLAG_JNI_METHOD_RETURN_LIST;
-            } else if (sign.contains(Constants.OBJECT_MAP)) {
+            } else if (sign.contains(Constants.OBJECT_MAP2)) {
                 _flag |= MethodFlag.FLAG_JNI_METHOD_RETURN_MAP;
             } else {
                 _flag |= MethodFlag.FLAG_JNI_METHOD_RETURN_OBJECT;
@@ -98,5 +98,17 @@ public class BaseType {
                 break;
         }
         return flag;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseType{" +
+                "clsName='" + clsName + '\'' +
+                ", sign='" + sign + '\'' +
+                ", flag=" + flag +
+                ", arrayDimension=" + arrayDimension +
+                ", additionalKey=" + additionalKey +
+                ", additionalValue=" + additionalValue +
+                '}';
     }
 }

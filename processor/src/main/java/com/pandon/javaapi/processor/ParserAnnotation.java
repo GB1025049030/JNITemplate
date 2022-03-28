@@ -93,6 +93,7 @@ public final class ParserAnnotation extends AbstractProcessor {
                     System.out.println("JNIClass<Constructor>: " + e);
                 } else if (ek == ElementKind.METHOD) {
                     System.out.println("JNIClass<JNIMethod>: " + e);
+                    System.out.println("JNIClass<JNIMethod>: type = " + e.asType());
                     JNIMethod method = e.getAnnotation(JNIMethod.class);
                     if (method == null) {
                         continue;
@@ -113,7 +114,8 @@ public final class ParserAnnotation extends AbstractProcessor {
                                     e.getSimpleName().toString(),
                                     method.sign(),
                                     flag,
-                                    method.overloadSN()));
+                                    method.overloadSN(),
+                                    e.asType().toString()));
                     if (!ret) {
                         String className = pkgName + "." + element.getSimpleName().toString();
                         throw new IllegalArgumentException("The annotation(overloadSN = "
@@ -207,8 +209,7 @@ public final class ParserAnnotation extends AbstractProcessor {
             }
             String newPkgName = pkgName.replace(".", "_");
             String[] _pkg = newPkgName.split("_");
-            String initSpace = getSpaceStr(_pkg.length - 1);
-            String _initSpace = getSpaceStr(1, initSpace);
+            String initSpace = "";
 
             StringBuilder macro_sb = new StringBuilder();
             StringBuilder method_code_sb = new StringBuilder();
@@ -219,66 +220,64 @@ public final class ParserAnnotation extends AbstractProcessor {
             for (JniClassInfo.ClassInfo cInfo : packInfo.classes) {
                 String simpleName = cInfo.simpleName.replace(".", "_");
 
-                String _initSpace2 = getSpaceStr(1, _initSpace);
+                String _initSpace1 = getSpaceStr(1, initSpace);
 
                 if (!cInfo.fields.isEmpty()) {
-                    macro_sb.append(_initSpace)
-                            .append(String.format(Constants.Format.MACRO_JAVA_BEAN,
+                    macro_sb.append(String.format(Constants.Format.MACRO_JAVA_BEAN,
                                     simpleName, cInfo.className));
 
-                    String _initSpace3 = getSpaceStr(1, _initSpace2);
+                    String _initSpace2 = getSpaceStr(1, _initSpace1);
 
                     obj_convert_sb.append("\n")
-                            .append(_initSpace)
                             .append(String.format(Constants.Format.TRANSFORM_CLASS_HEADER,
                                     simpleName, simpleName))
                             .append(" {\n")
-                            .append(_initSpace2).append(Constants.Format.TRANSFORM_USING)
-                            .append(_initSpace2).append(Constants.Format.TRANSFORM_PUBLIC)
-                            .append(_initSpace3)
+                            .append(_initSpace1).append(Constants.Format.TRANSFORM_USING)
+                            .append(_initSpace1).append(Constants.Format.TRANSFORM_PUBLIC)
+                            .append(_initSpace2)
                             .append(String.format(Constants.Format.TRANSFORM_METHOD_EXTRACT, simpleName))
-                            .append(_initSpace3)
+                            .append(_initSpace2)
                             .append(String.format(Constants.Format.TRANSFORM_METHOD_CONVERT, simpleName))
-                            .append(_initSpace)
+                            .append(initSpace)
                             .append("};\n");
 
                     field_code_enum_sb
                             .append("\n")
-                            .append(_initSpace)
+                            .append(initSpace)
                             .append(String.format(Constants.Format.ENUM_CLASS_HEADER, simpleName))
                             .append(" {\n");
 
                     field_struct_sb
                             .append("\n")
-                            .append(_initSpace)
+                            .append(initSpace)
                             .append("struct ")
                             .append(simpleName)
                             .append(" {\n");
 
                     for (JniClassInfo.FieldInfo fInfo : cInfo.fields) {
-                        field_struct_sb.append(_initSpace2)
+                        field_struct_sb.append(_initSpace1)
                                 .append(fInfo.type)
                                 .append(" ")
                                 .append(fInfo.name)
                                 .append(";\n");
 
-                        field_code_enum_sb.append(_initSpace2)
+                        field_code_enum_sb.append(_initSpace1)
                                 .append(fInfo.name)
                                 .append(" = ")
                                 .append(fInfo.id)
                                 .append(",\n");
                     }
 
-                    field_struct_sb.append(_initSpace).append("};\n");
+                    field_struct_sb.append(initSpace).append("};\n");
 
-                    field_code_enum_sb.append(_initSpace).append("};\n");
+                    field_code_enum_sb.append(initSpace).append("};\n");
                 }
 
                 for (JniClassInfo.MethodInfo mInfo : cInfo.methods) {
-                    method_code_sb
-                            .append(_initSpace2)
-                            .append(String.format(Constants.Format.METHOD_CODE_ANNOTATION, mInfo.sign))
-                            .append(_initSpace2)
+                    method_code_sb.append("\n")
+                            .append(String.format(Constants.Format.METHOD_CODE_ANNOTATION,
+                                    mInfo.sign, mInfo.isStaticMethod, mInfo.isNonvirtualMethod))
+                            .append(_initSpace1)
                             .append(String.format(Locale.getDefault(), Constants.Format.METHOD_CODE,
                                     simpleName, mInfo.name, mInfo.overloadSN, mInfo.id));
                 }
@@ -286,23 +285,23 @@ public final class ParserAnnotation extends AbstractProcessor {
 
             StringBuilder content_sb = new StringBuilder();
             content_sb.append("\n")
-                    .append(_initSpace)
+                    .append(initSpace)
                     .append(String.format(Constants.Format.MACRO_JSON_FILE,
                             newPkgName.toUpperCase(), newPkgName));
             if (macro_sb.length() > 0) {
                 content_sb.append("\n").append(macro_sb);
             }
 
-            if (obj_convert_sb.length()>0){
+            if (obj_convert_sb.length() > 0) {
                 content_sb.append("\n")
-                        .append(_initSpace)
+                        .append(initSpace)
                         .append(Constants.Format.NAME_SPACE_TEMPLATE);
             }
 
             if (packInfo.preDefined.size() > 0) {
                 content_sb.append("\n");
                 for (String preDefined : packInfo.preDefined) {
-                    content_sb.append(_initSpace).append(preDefined);
+                    content_sb.append(initSpace).append(preDefined);
                 }
             }
             content_sb.append(field_struct_sb);
@@ -310,11 +309,11 @@ public final class ParserAnnotation extends AbstractProcessor {
             content_sb.append(field_code_enum_sb);
             if (method_code_sb.length() > 0) {
                 content_sb.append("\n")
-                        .append(_initSpace)
+                        .append(initSpace)
                         .append(String.format(Constants.Format.METHOD_CODE_HEADER,
                                 newPkgName.toUpperCase()));
                 content_sb.append(method_code_sb);
-                content_sb.append(_initSpace).append("};\n");
+                content_sb.append(initSpace).append("};\n");
             }
 
             String macro = "JNI_" + newPkgName.toUpperCase() + "_H";
@@ -330,17 +329,18 @@ public final class ParserAnnotation extends AbstractProcessor {
             }
 
             header_sb.append("\n");
-            for (int i = 0, len = _pkg.length; i < len; i++) {
-                initSpace = getSpaceStr(i);
-                header_sb.append(initSpace)
-                        .append(String.format(Constants.Format.NAME_SPACE,
-                                _pkg[i].toUpperCase()));
+            for (String s : _pkg) {
+                header_sb.append(String.format(Constants.Format.NAME_SPACE, s.toUpperCase()));
             }
 
             header_sb.append(content_sb);
 
+            header_sb.append("\n");
             for (int i = _pkg.length - 1; i >= 0; i--) {
-                header_sb.append(getSpaceStr(i)).append("}\n");
+                header_sb
+                        .append("} // namespace ")
+                        .append(_pkg[i].toUpperCase())
+                        .append("\n");
             }
 
             header_sb.append("\n");
@@ -400,14 +400,6 @@ public final class ParserAnnotation extends AbstractProcessor {
             return config.createNewFile();
         }
         return true;
-    }
-
-    private String getSpaceStr(int number) {
-        String initSpace = "";
-        if (number > 0) {
-            return getSpaceStr(number, initSpace);
-        }
-        return initSpace;
     }
 
     private String getSpaceStr(int number, String initSpace) {
