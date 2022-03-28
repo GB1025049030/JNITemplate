@@ -27,13 +27,19 @@ public:
 
     int InitJavaVm(JavaVM *vm);
 
-    int Register(JNIEnv *env);
+    static int Register(JNIEnv *env);
 
     void NativeInit(JNIEnv *env);
 
     void Test(JNIEnv *env);
 
+    void GetClassRooms(std::vector<ClassRoom> *rooms);
+
+    void GetFirstBooks(std::map<int, Books> *books);
+
     void AddClassRoom(ClassRoom room);
+
+    void AddClassRooms(std::vector<ClassRoom> rooms);
 
 private:
     std::weak_ptr<JSCallAndroidJni> sJSCallAndroidJniPtr;

@@ -31,18 +31,14 @@ JNIUtils::~JNIUtils() {
     Jkit jkit;
     if (jkit.IsValidEnv()) {
         JNIEnv *env = jkit.operator->();
-        for (std::map<std::string, jclass>::iterator it =
-                 sUtilJClassIDs->begin();
-             it != sUtilJClassIDs->end(); it++) {
-            if (it->second) {
-                env->DeleteGlobalRef(it->second);
+        for (auto &sUtilJClassID : *sUtilJClassIDs) {
+            if (sUtilJClassID.second) {
+                env->DeleteGlobalRef(sUtilJClassID.second);
             }
         }
-        for (std::map<std::string, jclass>::iterator it =
-                 sModuleJClassIDs->begin();
-             it != sModuleJClassIDs->end(); it++) {
-            if (it->second) {
-                env->DeleteGlobalRef(it->second);
+        for (auto &sModuleJClassID : *sModuleJClassIDs) {
+            if (sModuleJClassID.second) {
+                env->DeleteGlobalRef(sModuleJClassID.second);
             }
         }
     }
@@ -66,7 +62,7 @@ int JNIUtils::InitUtilJavaClass(JNIEnv *env) {
         auto clazz = (jclass)env->NewGlobalRef(clazzRet);
         sUtilJClassIDs->insert(
             std::pair<std::string, jclass>(it->first.c_str(), clazz));
-        for (auto info : it->second) {
+        for (const auto &info : it->second) {
             jmethodID method =
                 env->GetMethodID(clazz, info.name.c_str(), info.sign.c_str());
             if (!method) {
@@ -143,16 +139,6 @@ int JNIUtils::InitModuleJavaClass(JNIEnv *env, const std::string &config) {
             if (!classInfo.fields.empty()) {
                 for (auto &fieldInfo : classInfo.fields) {
                     jfieldID fieldId;
-                    JNI_LOGD("guobin: name: %s, flag: %d",
-                             fieldInfo.name.c_str(), fieldInfo.baseType.flag);
-                    if (fieldInfo.baseType.additionalValue) {
-                        JNI_LOGD("guobin: additionalValue: flag: %d",
-                                 fieldInfo.baseType.additionalValue->flag);
-                    }
-                    if (fieldInfo.baseType.additionalKey) {
-                        JNI_LOGD("guobin: additionalKey: flag: %d",
-                                 fieldInfo.baseType.additionalKey->flag);
-                    }
                     if (JNIInfoUtil::IsStatic(fieldInfo.baseType.flag)) {
                         fieldId = env->GetStaticFieldID(
                             clazz, fieldInfo.name.c_str(),
@@ -211,7 +197,7 @@ int JNIUtils::GetJNIFieldInfo(int32_t fieldID, JNIFieldInfo *fieldInfo) {
     return JNI_ERR;
 }
 
-jclass JNIUtils::GetModuleJClass(std::string name) {
+jclass JNIUtils::GetModuleJClass(const std::string &name) {
     if (sModuleJClassIDs) {
         if (sModuleJClassIDs->count(name) > 0) {
             return sModuleJClassIDs->at(name);
@@ -222,7 +208,7 @@ jclass JNIUtils::GetModuleJClass(std::string name) {
     return nullptr;
 }
 
-jclass JNIUtils::GetUtilJClass(std::string name) {
+jclass JNIUtils::GetUtilJClass(const std::string &name) {
     if (sUtilJClassIDs) {
         if (sUtilJClassIDs->count(name) > 0) {
             return sUtilJClassIDs->at(name);
@@ -597,8 +583,8 @@ void JNIUtils::GetStringArrayField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetBooleanArrayField(JNIEnv *env, jobject object,
                                     JNIFieldInfo *info,
-                                    std::vector<uint8_t> *source) {
-    jbooleanArray arr = env->NewBooleanArray(source->size());
+                                    const std::vector<uint8_t> *source) {
+    jbooleanArray arr = env->NewBooleanArray((jsize)source->size());
     ConvertJavaBoolArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
@@ -606,8 +592,8 @@ void JNIUtils::SetBooleanArrayField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetByteArrayField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info,
-                                 std::vector<int8_t> *source) {
-    jbyteArray arr = env->NewByteArray(source->size());
+                                 const std::vector<int8_t> *source) {
+    jbyteArray arr = env->NewByteArray((jsize)source->size());
     ConvertJavaByteArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
@@ -615,8 +601,8 @@ void JNIUtils::SetByteArrayField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetCharArrayField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info,
-                                 std::vector<uint16_t> *source) {
-    jcharArray arr = env->NewCharArray(source->size());
+                                 const std::vector<uint16_t> *source) {
+    jcharArray arr = env->NewCharArray((jsize)source->size());
     ConvertJavaCharArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
@@ -624,16 +610,16 @@ void JNIUtils::SetCharArrayField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetShortArrayField(JNIEnv *env, jobject object,
                                   JNIFieldInfo *info,
-                                  std::vector<int16_t> *source) {
-    jshortArray arr = env->NewShortArray(source->size());
+                                  const std::vector<int16_t> *source) {
+    jshortArray arr = env->NewShortArray((jsize)source->size());
     ConvertJavaShortArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
 }
 
 void JNIUtils::SetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                                std::vector<int32_t> *source) {
-    jintArray arr = env->NewIntArray(source->size());
+                                const std::vector<int32_t> *source) {
+    jintArray arr = env->NewIntArray((jsize)source->size());
     ConvertJavaIntArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
@@ -641,8 +627,8 @@ void JNIUtils::SetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 void JNIUtils::SetLongArrayField(JNIEnv *env, jobject object,
                                  JNIFieldInfo *info,
-                                 std::vector<int64_t> *source) {
-    jlongArray arr = env->NewLongArray(source->size());
+                                 const std::vector<int64_t> *source) {
+    jlongArray arr = env->NewLongArray((jsize)source->size());
     ConvertJavaLongArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
@@ -650,8 +636,8 @@ void JNIUtils::SetLongArrayField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetFloatArrayField(JNIEnv *env, jobject object,
                                   JNIFieldInfo *info,
-                                  std::vector<float> *source) {
-    jfloatArray arr = env->NewFloatArray(source->size());
+                                  const std::vector<float> *source) {
+    jfloatArray arr = env->NewFloatArray((jsize)source->size());
     ConvertJavaFloatArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
@@ -659,15 +645,15 @@ void JNIUtils::SetFloatArrayField(JNIEnv *env, jobject object,
 
 void JNIUtils::SetDoubleArrayField(JNIEnv *env, jobject object,
                                    JNIFieldInfo *info,
-                                   std::vector<double> *source) {
-    jdoubleArray arr = env->NewDoubleArray(source->size());
+                                   const std::vector<double> *source) {
+    jdoubleArray arr = env->NewDoubleArray((jsize)source->size());
     ConvertJavaDoubleArray(env, source, &arr);
     SetObjectField(env, object, info, arr);
     ClearException(env);
 }
 
 void JNIUtils::SetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                              std::string *source) {
+                              const std::string *source) {
     jstring str;
     ConvertJavaString(env, source, &str);
     SetObjectField(env, object, info, str);
@@ -676,7 +662,7 @@ void JNIUtils::SetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 void JNIUtils::SetStringArrayField(JNIEnv *env, jobject object,
                                    JNIFieldInfo *info,
-                                   std::vector<std::string> *source) {
+                                   const std::vector<std::string> *source) {
     jclass jstringClass = env->FindClass(JAVA_LANG_STRING);
     jint size = (jint)source->size();
     if (size > 0) {
@@ -906,7 +892,8 @@ void JNIUtils::ExtractJavaStringArray(JNIEnv *env, jobjectArray source,
     }
 }
 
-void JNIUtils::ConvertJavaBoolArray(JNIEnv *env, std::vector<uint8_t> *source,
+void JNIUtils::ConvertJavaBoolArray(JNIEnv *env,
+                                    const std::vector<uint8_t> *source,
                                     jbooleanArray *result) {
     if (!env || !source || !result) {
         return;
@@ -921,7 +908,8 @@ void JNIUtils::ConvertJavaBoolArray(JNIEnv *env, std::vector<uint8_t> *source,
     }
 }
 
-void JNIUtils::ConvertJavaByteArray(JNIEnv *env, std::vector<int8_t> *source,
+void JNIUtils::ConvertJavaByteArray(JNIEnv *env,
+                                    const std::vector<int8_t> *source,
                                     jbyteArray *result) {
     if (!env || !source || !result) {
         return;
@@ -936,7 +924,8 @@ void JNIUtils::ConvertJavaByteArray(JNIEnv *env, std::vector<int8_t> *source,
     }
 }
 
-void JNIUtils::ConvertJavaCharArray(JNIEnv *env, std::vector<uint16_t> *source,
+void JNIUtils::ConvertJavaCharArray(JNIEnv *env,
+                                    const std::vector<uint16_t> *source,
                                     jcharArray *result) {
     if (!env || !source || !result) {
         return;
@@ -951,7 +940,8 @@ void JNIUtils::ConvertJavaCharArray(JNIEnv *env, std::vector<uint16_t> *source,
     }
 }
 
-void JNIUtils::ConvertJavaShortArray(JNIEnv *env, std::vector<int16_t> *source,
+void JNIUtils::ConvertJavaShortArray(JNIEnv *env,
+                                     const std::vector<int16_t> *source,
                                      jshortArray *result) {
     if (!env || !source || !result) {
         return;
@@ -966,7 +956,8 @@ void JNIUtils::ConvertJavaShortArray(JNIEnv *env, std::vector<int16_t> *source,
     }
 }
 
-void JNIUtils::ConvertJavaIntArray(JNIEnv *env, std::vector<int32_t> *source,
+void JNIUtils::ConvertJavaIntArray(JNIEnv *env,
+                                   const std::vector<int32_t> *source,
                                    jintArray *result) {
     if (!env || !source || !result) {
         return;
@@ -981,7 +972,8 @@ void JNIUtils::ConvertJavaIntArray(JNIEnv *env, std::vector<int32_t> *source,
     }
 }
 
-void JNIUtils::ConvertJavaLongArray(JNIEnv *env, std::vector<int64_t> *source,
+void JNIUtils::ConvertJavaLongArray(JNIEnv *env,
+                                    const std::vector<int64_t> *source,
                                     jlongArray *result) {
     if (!env || !source || !result) {
         return;
@@ -996,7 +988,8 @@ void JNIUtils::ConvertJavaLongArray(JNIEnv *env, std::vector<int64_t> *source,
     }
 }
 
-void JNIUtils::ConvertJavaFloatArray(JNIEnv *env, std::vector<float> *source,
+void JNIUtils::ConvertJavaFloatArray(JNIEnv *env,
+                                     const std::vector<float> *source,
                                      jfloatArray *result) {
     if (!env || !source || !result) {
         return;
@@ -1011,7 +1004,8 @@ void JNIUtils::ConvertJavaFloatArray(JNIEnv *env, std::vector<float> *source,
     }
 }
 
-void JNIUtils::ConvertJavaDoubleArray(JNIEnv *env, std::vector<double> *source,
+void JNIUtils::ConvertJavaDoubleArray(JNIEnv *env,
+                                      const std::vector<double> *source,
                                       jdoubleArray *result) {
     if (!env || !source || !result) {
         return;
@@ -1026,25 +1020,7 @@ void JNIUtils::ConvertJavaDoubleArray(JNIEnv *env, std::vector<double> *source,
     }
 }
 
-void JNIUtils::ConvertJavaString(JNIEnv *env, std::string *source,
-                                 jstring *result) {
-    if (!env || !source || !result) {
-        return;
-    }
-    jclass strClass = env->FindClass(JAVA_LANG_STRING);
-    jmethodID init =
-        env->GetMethodID(strClass, "<init>", "([BLjava/lang/String;)V");
-    const char *str = source->c_str();
-    jbyteArray bytes = env->NewByteArray((jsize)strlen(str));
-    env->SetByteArrayRegion(bytes, 0, (jsize)strlen(str), (jbyte *)str);
-    jstring encoding = env->NewStringUTF("GB2312");
-    auto ret = (jstring)env->NewObject(strClass, init, bytes, encoding);
-    if (ret) {
-        (*result) = static_cast<jstring>(env->NewGlobalRef(ret));
-    }
-}
-
-void JNIUtils::ConvertJavaString(JNIEnv *env, std::string const *source,
+void JNIUtils::ConvertJavaString(JNIEnv *env, const std::string *source,
                                  jstring *result) {
     if (!env || !source || !result) {
         return;
@@ -1080,14 +1056,14 @@ void JNIUtils::ConvertJavaString(JNIEnv *env, const char *source,
 }
 
 void JNIUtils::ConvertJavaStringArray(JNIEnv *env,
-                                      std::vector<std::string> *source,
+                                      const std::vector<std::string> *source,
                                       jobjectArray *result) {
     if (!env || !source || !result) {
         return;
     }
-    size_t size = source->size();
+    auto size = (jsize)source->size();
     if (size > 0) {
-        for (size_t i = 0; i < size; ++i) {
+        for (jsize i = 0; i < size; ++i) {
             jstring jStr = env->NewStringUTF(source->at(i).c_str());
             env->SetObjectArrayElement(*result, i, jStr);
         }
@@ -1431,8 +1407,7 @@ void JNIUtils::CallJavaStringMethod(JNIEnv *env,
                                     const JNIMethodInfo *methodInfo,
                                     jobject holder, jvalue *param,
                                     std::string *result) {
-    auto str =
-        (jstring)CallJavaObjectMethod(env, methodInfo, holder, param);
+    auto str = (jstring)CallJavaObjectMethod(env, methodInfo, holder, param);
     if (!str) {
         JNI_LOGE("CallJavaMethod: str is null");
         return;

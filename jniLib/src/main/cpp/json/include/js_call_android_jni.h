@@ -172,62 +172,63 @@ public:
                        Transform<K> *keyTransform,
                        Transform<V> *valueTransform);
 
-    void SetFieldValue(jobject object, int32_t fieldID, uint8_t *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const uint8_t *source);
 
-    void SetFieldValue(jobject object, int32_t fieldID, int8_t *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const int8_t *source);
 
-    void SetFieldValue(jobject object, int32_t fieldID, uint16_t *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const uint16_t *source);
 
-    void SetFieldValue(jobject object, int32_t fieldID, int16_t *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const int16_t *source);
 
-    void SetFieldValue(jobject object, int32_t fieldID, int32_t *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const int32_t *source);
 
-    void SetFieldValue(jobject object, int32_t fieldID, int64_t *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const int64_t *source);
 
-    void SetFieldValue(jobject object, int32_t fieldID, float *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const float *source);
 
-    void SetFieldValue(jobject object, int32_t fieldID, double *source);
-
-    void SetFieldValue(jobject object, int32_t fieldID, std::string *source);
+    void SetFieldValue(jobject object, int32_t fieldID, const double *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<uint8_t> *source);
+                       const std::string *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<int8_t> *source);
+                       const std::vector<uint8_t> *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<uint16_t> *source);
+                       const std::vector<int8_t> *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<int16_t> *source);
+                       const std::vector<uint16_t> *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<int32_t> *source);
+                       const std::vector<int16_t> *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<int64_t> *source);
+                       const std::vector<int32_t> *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<float> *source);
+                       const std::vector<int64_t> *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<double> *source);
+                       const std::vector<float> *source);
 
     void SetFieldValue(jobject object, int32_t fieldID,
-                       std::vector<std::string> *source);
+                       const std::vector<double> *source);
+
+    void SetFieldValue(jobject object, int32_t fieldID,
+                       const std::vector<std::string> *source);
 
     template <typename T>
-    void SetFieldValue(jobject object, int32_t fieldID, T *source,
+    void SetFieldValue(jobject object, int32_t fieldID, const T *source,
                        Transform<T> *transform);
 
     template <typename T>
-    void SetFieldValue(jobject object, int32_t fieldID, std::vector<T> *source,
-                       Transform<T> *transform);
+    void SetFieldValue(jobject object, int32_t fieldID,
+                       const std::vector<T> *source, Transform<T> *transform);
 
     template <typename K, typename V>
-    void SetFieldValue(jobject object, int32_t fieldID, std::map<K, V> *source,
-                       Transform<K> *keyTransform,
+    void SetFieldValue(jobject object, int32_t fieldID,
+                       const std::map<K, V> *source, Transform<K> *keyTransform,
                        Transform<V> *valueTransform);
 
     jstring NewStringUTF(const char *string);
@@ -426,8 +427,8 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 }
 
 template <class T>
-void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID, T *source,
-                                     Transform<T> *transform) {
+void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
+                                     const T *source, Transform<T> *transform) {
     JNI_LOGI("SetFieldValue(Object): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -457,7 +458,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID, T *source,
 
 template <class T>
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<T> *source,
+                                     const std::vector<T> *source,
                                      Transform<T> *transform) {
     JNI_LOGI("SetFieldValue(ObjectArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
@@ -493,7 +494,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 
 template <typename K, typename V>
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::map<K, V> *source,
+                                     const std::map<K, V> *source,
                                      Transform<K> *keyTransform,
                                      Transform<V> *valueTransform) {
     JNI_LOGI("SetFieldValue(Map): begin(%" LOG_LIMIT "d)", fieldID);
@@ -593,7 +594,7 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
     if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
         return;
     }
-    if (!object || !result || !keyTransform || !valueTransform) {
+    if (!result || !keyTransform || !valueTransform) {
         JNI_LOGE("CallJavaMethod(Map) : param error");
         return;
     }
@@ -749,9 +750,9 @@ class TransformBoolean : public Transform<jboolean> {
 public:
     void Extract(jobject source, jboolean *target) override;
 
-    void Convert(jobject target, jboolean *source) override{};
+    void Convert(jobject target, const jboolean *source) override{};
 
-    jobject CreateObject(jboolean *source) override;
+    jobject CreateObject(const jboolean *source) override;
 };
 
 class TransformByte : public Transform<jbyte> {
@@ -760,9 +761,9 @@ class TransformByte : public Transform<jbyte> {
 public:
     void Extract(jobject source, jbyte *target) override;
 
-    void Convert(jobject target, jbyte *source) override{};
+    void Convert(jobject target, const jbyte *source) override{};
 
-    jobject CreateObject(jbyte *source) override;
+    jobject CreateObject(const jbyte *source) override;
 };
 
 class TransformChar : public Transform<jchar> {
@@ -771,9 +772,9 @@ class TransformChar : public Transform<jchar> {
 public:
     void Extract(jobject source, jchar *target) override;
 
-    void Convert(jobject target, jchar *source) override{};
+    void Convert(jobject target, const jchar *source) override{};
 
-    jobject CreateObject(jchar *source) override;
+    jobject CreateObject(const jchar *source) override;
 };
 
 class TransformShort : public Transform<jshort> {
@@ -782,9 +783,9 @@ class TransformShort : public Transform<jshort> {
 public:
     void Extract(jobject source, jshort *target) override;
 
-    void Convert(jobject target, jshort *source) override{};
+    void Convert(jobject target, const jshort *source) override{};
 
-    jobject CreateObject(jshort *source) override;
+    jobject CreateObject(const jshort *source) override;
 };
 
 class TransformInt : public Transform<jint> {
@@ -793,9 +794,9 @@ class TransformInt : public Transform<jint> {
 public:
     void Extract(jobject source, jint *target) override;
 
-    void Convert(jobject target, jint *source) override{};
+    void Convert(jobject target, const jint *source) override{};
 
-    jobject CreateObject(jint *source) override;
+    jobject CreateObject(const jint *source) override;
 };
 
 class TransformLong : public Transform<jlong> {
@@ -804,9 +805,9 @@ class TransformLong : public Transform<jlong> {
 public:
     void Extract(jobject source, jlong *target) override;
 
-    void Convert(jobject target, jlong *source) override{};
+    void Convert(jobject target, const jlong *source) override{};
 
-    jobject CreateObject(jlong *source) override;
+    jobject CreateObject(const jlong *source) override;
 };
 
 class TransformFloat : public Transform<jfloat> {
@@ -815,9 +816,9 @@ class TransformFloat : public Transform<jfloat> {
 public:
     void Extract(jobject source, jfloat *target) override;
 
-    void Convert(jobject target, jfloat *source) override{};
+    void Convert(jobject target, const jfloat *source) override{};
 
-    jobject CreateObject(jfloat *source) override;
+    jobject CreateObject(const jfloat *source) override;
 };
 
 class TransformDouble : public Transform<jdouble> {
@@ -826,9 +827,9 @@ class TransformDouble : public Transform<jdouble> {
 public:
     void Extract(jobject source, jdouble *target) override;
 
-    void Convert(jobject target, jdouble *source) override{};
+    void Convert(jobject target, const jdouble *source) override{};
 
-    jobject CreateObject(jdouble *source) override;
+    jobject CreateObject(const jdouble *source) override;
 };
 
 class TransformString : public Transform<std::string> {
@@ -837,9 +838,9 @@ class TransformString : public Transform<std::string> {
 public:
     void Extract(jobject source, std::string *target) override;
 
-    void Convert(jobject target, std::string *source) override{};
+    void Convert(jobject target, const std::string *source) override{};
 
-    jobject CreateObject(std::string *source) override;
+    jobject CreateObject(const std::string *source) override;
 };
 }  // namespace TEMPLATE
 }  // namespace OHOS

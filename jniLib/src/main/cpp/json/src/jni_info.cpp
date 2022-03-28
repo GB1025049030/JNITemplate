@@ -134,13 +134,13 @@ bool JNIInfoUtil::CheckIsTypeArray(BaseType *type, MethodFlag targetFlag,
 
 bool JNIInfoUtil::CheckIsTypeList(BaseType *type, MethodFlag targetFlag,
                                   int32_t *result) {
-    int32_t flag = static_cast<int32_t>(GetReturnType(type->flag));
+    auto flag = static_cast<int32_t>(GetReturnType(type->flag));
     (*result) = static_cast<int32_t>(flag);
     if (IsList(flag)) {
         if (type->additionalValue) {
             JNI_LOGW("CheckIsTypeList: additionalValue.flag = %" LOG_LIMIT "d",
                      type->additionalValue->flag);
-            int32_t additionalValueFlag = static_cast<int32_t>(
+            auto additionalValueFlag = static_cast<int32_t>(
                 GetReturnType(type->additionalValue->flag));
             return additionalValueFlag == static_cast<int32_t>(targetFlag);
         }

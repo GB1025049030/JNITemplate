@@ -19,8 +19,9 @@ public class Constants {
         public static final String TRANSFORM_USING = "using Transform::Transform;\n";
         public static final String TRANSFORM_PUBLIC = "public:\n";
         public static final String TRANSFORM_METHOD_EXTRACT = "void Extract(jobject source, %s *target) override;\n";
-        public static final String TRANSFORM_METHOD_CONVERT = "void Convert(jobject target, %s *source) override;\n";
-        public static final String TRANSFORM_METHOD_CREATE_OBJECT = "jobject CreateObject(%s *source)\n";
+        public static final String TRANSFORM_METHOD_CONVERT = "void Convert(jobject target, const %s *source) override;\n";
+        public static final String TRANSFORM_METHOD_CREATE_OBJECT = "jobject CreateObject(const %s *source) override;\n";
+        public static final String TRANSFORM_METHOD_RELEASE = "void Release() override;\n";
 
         public static final String ENUM_CLASS_HEADER = "enum class %s_FIELD_CODE";
 

@@ -19,9 +19,9 @@ public:
 
     virtual void Extract(jobject source, T *target) = 0;
 
-    virtual void Convert(jobject target, T *source) = 0;
+    virtual void Convert(jobject target, const T *source) = 0;
 
-    virtual jobject CreateObject(T *source) = 0;
+    virtual jobject CreateObject(const T *source) = 0;
 
     virtual std::string GetClassName();
 

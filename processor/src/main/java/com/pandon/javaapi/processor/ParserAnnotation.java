@@ -238,6 +238,10 @@ public final class ParserAnnotation extends AbstractProcessor {
                             .append(String.format(Constants.Format.TRANSFORM_METHOD_EXTRACT, simpleName))
                             .append(_initSpace2)
                             .append(String.format(Constants.Format.TRANSFORM_METHOD_CONVERT, simpleName))
+                            .append(_initSpace2)
+                            .append(String.format(Constants.Format.TRANSFORM_METHOD_CREATE_OBJECT, simpleName))
+                            .append(_initSpace2)
+                            .append(Constants.Format.TRANSFORM_METHOD_RELEASE)
                             .append(initSpace)
                             .append("};\n");
 

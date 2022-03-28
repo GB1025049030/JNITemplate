@@ -101,253 +101,252 @@ public:
 
     int GetJNIFieldInfo(int32_t fieldID, JNIFieldInfo *fieldInfo);
 
-    jclass GetModuleJClass(std::string name);
+    jclass GetModuleJClass(const std::string &name);
 
-    jclass GetUtilJClass(std::string name);
+    jclass GetUtilJClass(const std::string &name);
 
     jmethodID GetUtilJMethodID(JavaUtilMethod id);
 
-    void ClearException(JNIEnv *env);
+    static void ClearException(JNIEnv *env);
 
-    jboolean GetBooleanField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jboolean GetBooleanField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetBooleanField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetBooleanField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                          jboolean value);
 
-    jbyte GetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jbyte GetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetByteField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                       jbyte value);
 
-    jchar GetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jchar GetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetCharField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                       jchar value);
 
-    jshort GetShortField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jshort GetShortField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetShortField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetShortField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                        jshort value);
 
-    jint GetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jint GetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetIntField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                      jint value);
 
-    jlong GetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jlong GetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetLongField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                       jlong value);
 
-    jfloat GetFloatField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jfloat GetFloatField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetFloatField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetFloatField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                        jfloat value);
 
-    jdouble GetDoubleField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jdouble GetDoubleField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetDoubleField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetDoubleField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                         jdouble value);
 
-    jobject GetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info);
+    static jobject GetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info);
 
-    void SetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void SetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                         jobject value);
 
-    void GetBooleanArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetBooleanArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                               std::vector<uint8_t> *result);
 
-    void SetBooleanArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                              std::vector<uint8_t> *source);
+    static void SetBooleanArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                              const std::vector<uint8_t> *source);
 
-    void GetByteArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetByteArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                            std::vector<int8_t> *result);
 
-    void SetByteArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                           std::vector<int8_t> *source);
+    static void SetByteArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                           const std::vector<int8_t> *source);
 
-    void GetCharArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetCharArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                            std::vector<uint16_t> *result);
 
-    void SetCharArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                           std::vector<uint16_t> *source);
+    static void SetCharArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                           const std::vector<uint16_t> *source);
 
-    void GetShortArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetShortArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                             std::vector<int16_t> *result);
 
-    void SetShortArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                            std::vector<int16_t> *source);
+    static void SetShortArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                            const std::vector<int16_t> *source);
 
-    void GetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                           std::vector<int32_t> *result);
 
-    void SetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                          std::vector<int32_t> *source);
+    static void SetIntArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                          const std::vector<int32_t> *source);
 
-    void GetLongArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetLongArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                            std::vector<int64_t> *result);
 
-    void SetLongArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                           std::vector<int64_t> *source);
+    static void SetLongArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                           const std::vector<int64_t> *source);
 
-    void GetFloatArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetFloatArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                             std::vector<float> *result);
 
-    void SetFloatArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                            std::vector<float> *source);
+    static void SetFloatArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                            const std::vector<float> *source);
 
-    void GetDoubleArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetDoubleArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                              std::vector<double> *result);
 
-    void SetDoubleArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                             std::vector<double> *source);
+    static void SetDoubleArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                             const std::vector<double> *source);
 
-    void GetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                         std::string *result);
 
-    void SetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                        std::string *source);
+    static void SetStringField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                        const std::string *source);
 
-    void GetStringArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+    static void GetStringArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                              std::vector<std::string> *result);
 
-    void SetStringArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                             std::vector<std::string> *source);
+    static void SetStringArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
+                             const std::vector<std::string> *source);
 
-    void CallJavaVoidMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaVoidMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                             jobject holder, jvalue *param);
 
-    jboolean CallJavaBooleanMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jboolean CallJavaBooleanMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                    jobject holder, jvalue *param);
 
-    jbyte CallJavaByteMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jbyte CallJavaByteMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                              jobject holder, jvalue *param);
 
-    jchar CallJavaCharMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jchar CallJavaCharMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                              jobject holder, jvalue *param);
 
-    jshort CallJavaShortMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jshort CallJavaShortMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                jobject holder, jvalue *param);
 
-    jint CallJavaIntMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jint CallJavaIntMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                            jobject holder, jvalue *param);
 
-    jlong CallJavaLongMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jlong CallJavaLongMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                              jobject holder, jvalue *param);
 
-    jfloat CallJavaFloatMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jfloat CallJavaFloatMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                jobject holder, jvalue *param);
 
-    jdouble CallJavaDoubleMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jdouble CallJavaDoubleMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                  jobject holder, jvalue *param);
 
-    void CallJavaStringMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaStringMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                               jobject holder, jvalue *param,
                               std::string *result);
 
-    jobject CallJavaObjectMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static jobject CallJavaObjectMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                  jobject holder, jvalue *param);
 
-    void CallJavaBooleanArrayMethod(JNIEnv *env,
+    static void CallJavaBooleanArrayMethod(JNIEnv *env,
                                     JNIMethodInfo const *methodInfo,
                                     jobject holder, jvalue *param,
                                     std::vector<uint8_t> *result);
 
-    void CallJavaByteArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaByteArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                  jobject holder, jvalue *param,
                                  std::vector<int8_t> *result);
 
-    void CallJavaCharArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaCharArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                  jobject holder, jvalue *param,
                                  std::vector<uint16_t> *result);
 
-    void CallJavaShortArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaShortArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                   jobject holder, jvalue *param,
                                   std::vector<int16_t> *result);
 
-    void CallJavaIntArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaIntArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                 jobject holder, jvalue *param,
                                 std::vector<int32_t> *result);
 
-    void CallJavaLongArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaLongArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                  jobject holder, jvalue *param,
                                  std::vector<int64_t> *result);
 
-    void CallJavaFloatArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaFloatArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                   jobject holder, jvalue *param,
                                   std::vector<float> *result);
 
-    void CallJavaDoubleArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaDoubleArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                    jobject holder, jvalue *param,
                                    std::vector<double> *result);
 
-    void CallJavaStringArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
+    static void CallJavaStringArrayMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
                                    jobject holder, jvalue *param,
                                    std::vector<std::string> *result);
 
-    void ExtractJavaBoolArray(JNIEnv *env, jbooleanArray source,
+    static void ExtractJavaBoolArray(JNIEnv *env, jbooleanArray source,
                               std::vector<uint8_t> *result);
 
-    void ExtractJavaByteArray(JNIEnv *env, jbyteArray source,
+    static void ExtractJavaByteArray(JNIEnv *env, jbyteArray source,
                               std::vector<int8_t> *result);
 
-    void ExtractJavaCharArray(JNIEnv *env, jcharArray source,
+    static void ExtractJavaCharArray(JNIEnv *env, jcharArray source,
                               std::vector<uint16_t> *result);
 
-    void ExtractJavaShortArray(JNIEnv *env, jshortArray source,
+    static void ExtractJavaShortArray(JNIEnv *env, jshortArray source,
                                std::vector<int16_t> *result);
 
-    void ExtractJavaIntArray(JNIEnv *env, jintArray source,
+    static void ExtractJavaIntArray(JNIEnv *env, jintArray source,
                              std::vector<int32_t> *result);
 
-    void ExtractJavaLongArray(JNIEnv *env, jlongArray source,
+    static void ExtractJavaLongArray(JNIEnv *env, jlongArray source,
                               std::vector<int64_t> *result);
 
-    void ExtractJavaFloatArray(JNIEnv *env, jfloatArray source,
+    static void ExtractJavaFloatArray(JNIEnv *env, jfloatArray source,
                                std::vector<float> *result);
 
-    void ExtractJavaDoubleArray(JNIEnv *env, jdoubleArray source,
+    static void ExtractJavaDoubleArray(JNIEnv *env, jdoubleArray source,
                                 std::vector<double> *result);
 
-    void ExtractJavaString(JNIEnv *env, jstring source, std::string *result);
+    static void ExtractJavaString(JNIEnv *env, jstring source, std::string *result);
 
-    void ExtractJavaString(JNIEnv *env, jstring source, char **result);
+    static void ExtractJavaString(JNIEnv *env, jstring source, char **result);
 
-    void ExtractJavaStringArray(JNIEnv *env, jobjectArray source,
+    static void ExtractJavaStringArray(JNIEnv *env, jobjectArray source,
                                 std::vector<std::string> *result);
 
-    void ConvertJavaBoolArray(JNIEnv *env, std::vector<uint8_t> *source,
+    static void ConvertJavaBoolArray(JNIEnv *env, const std::vector<uint8_t> *source,
                               jbooleanArray *result);
 
-    void ConvertJavaByteArray(JNIEnv *env, std::vector<int8_t> *source,
+    static void ConvertJavaByteArray(JNIEnv *env, const std::vector<int8_t> *source,
                               jbyteArray *result);
 
-    void ConvertJavaCharArray(JNIEnv *env, std::vector<uint16_t> *source,
+    static void ConvertJavaCharArray(JNIEnv *env, const std::vector<uint16_t> *source,
                               jcharArray *result);
 
-    void ConvertJavaShortArray(JNIEnv *env, std::vector<int16_t> *source,
+    static void ConvertJavaShortArray(JNIEnv *env, const std::vector<int16_t> *source,
                                jshortArray *result);
 
-    void ConvertJavaIntArray(JNIEnv *env, std::vector<int32_t> *source,
+    static void ConvertJavaIntArray(JNIEnv *env, const std::vector<int32_t> *source,
                              jintArray *result);
 
-    void ConvertJavaLongArray(JNIEnv *env, std::vector<int64_t> *source,
+    static void ConvertJavaLongArray(JNIEnv *env, const std::vector<int64_t> *source,
                               jlongArray *result);
 
-    void ConvertJavaFloatArray(JNIEnv *env, std::vector<float> *source,
+    static void ConvertJavaFloatArray(JNIEnv *env, const std::vector<float> *source,
                                jfloatArray *result);
 
-    void ConvertJavaDoubleArray(JNIEnv *env, std::vector<double> *source,
+    static void ConvertJavaDoubleArray(JNIEnv *env, const std::vector<double> *source,
                                 jdoubleArray *result);
 
-    void ConvertJavaString(JNIEnv *env, std::string *source, jstring *result);
-
-    void ConvertJavaString(JNIEnv *env, std::string const *source,
+    static void ConvertJavaString(JNIEnv *env, const std::string *source,
                            jstring *result);
 
-    void ConvertJavaString(JNIEnv *env, const char *source, jstring *result);
+    static void ConvertJavaString(JNIEnv *env, const char *source, jstring *result);
 
-    void ConvertJavaStringArray(JNIEnv *env, std::vector<std::string> *source,
+    static void ConvertJavaStringArray(JNIEnv *env,
+                                const std::vector<std::string> *source,
                                 jobjectArray *result);
 
     template <typename T>
@@ -369,21 +368,21 @@ public:
                          Transform<T> *transform);
 
     template <typename T>
-    void ConvertJavaObject(JNIEnv *env, T *source, jobject *result,
+    void ConvertJavaObject(JNIEnv *env, const T *source, jobject *result,
                            Transform<T> *transform);
 
     template <typename T>
-    void ConvertJavaObjectArray(JNIEnv *env, std::vector<T> *source,
+    void ConvertJavaObjectArray(JNIEnv *env, const std::vector<T> *source,
                                 jobjectArray *result, Transform<T> *transform);
 
     template <typename K, typename V>
-    void ConvertJavaMap(JNIEnv *env, std::map<K, V> *source, jobject *result,
-                        Transform<K> *keyTransform,
+    void ConvertJavaMap(JNIEnv *env, const std::map<K, V> *source,
+                        jobject *result, Transform<K> *keyTransform,
                         Transform<V> *valueTransform);
 
     template <typename T>
-    void ConvertJavaList(JNIEnv *env, std::vector<T> *source, jobject *result,
-                         Transform<T> *transform);
+    void ConvertJavaList(JNIEnv *env, const std::vector<T> *source,
+                         jobject *result, Transform<T> *transform);
 
     template <typename T>
     void CallJavaObjectMethod(JNIEnv *env, JNIMethodInfo const *methodInfo,
@@ -426,19 +425,20 @@ public:
 
     template <typename T>
     void SetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                        T *source, Transform<T> *transform);
+                        const T *source, Transform<T> *transform);
 
     template <typename T>
     void SetObjectArrayField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                             std::vector<T> *source, Transform<T> *transform);
+                             const std::vector<T> *source,
+                             Transform<T> *transform);
 
     template <typename T>
     void SetListField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                      std::vector<T> *source, Transform<T> *transform);
+                      const std::vector<T> *source, Transform<T> *transform);
 
     template <typename K, typename V>
     void SetMapField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                     std::map<K, V> *source, Transform<K> *keyTransform,
+                     const std::map<K, V> *source, Transform<K> *keyTransform,
                      Transform<V> *valueTransform);
 
     jobject NewObject(JNIEnv *env, std::string *className);
@@ -498,7 +498,7 @@ void JNIUtils::ExtractJavaMap(JNIEnv *env, jobject source,
         K key;
         keyTransform->Extract(jKey, &key);
         V value;
-        valueTransform->Extract(jValue, value);
+        valueTransform->Extract(jValue, &value);
         result->insert(std::pair<K, V>(key, value));
     }
 }
@@ -522,7 +522,7 @@ void JNIUtils::ExtractJavaList(JNIEnv *env, jobject source,
 }
 
 template <typename T>
-void JNIUtils::ConvertJavaObject(JNIEnv *env, T *source, jobject *result,
+void JNIUtils::ConvertJavaObject(JNIEnv *env, const T *source, jobject *result,
                                  Transform<T> *transform) {
     auto object = transform->CreateObject(source);
     if (!object) {
@@ -534,7 +534,7 @@ void JNIUtils::ConvertJavaObject(JNIEnv *env, T *source, jobject *result,
 }
 
 template <typename T>
-void JNIUtils::ConvertJavaObjectArray(JNIEnv *env, std::vector<T> *source,
+void JNIUtils::ConvertJavaObjectArray(JNIEnv *env, const std::vector<T> *source,
                                       jobjectArray *result,
                                       Transform<T> *transform) {
     int size = source->size();
@@ -555,7 +555,7 @@ void JNIUtils::ConvertJavaObjectArray(JNIEnv *env, std::vector<T> *source,
 }
 
 template <typename K, typename V>
-void JNIUtils::ConvertJavaMap(JNIEnv *env, std::map<K, V> *source,
+void JNIUtils::ConvertJavaMap(JNIEnv *env, const std::map<K, V> *source,
                               jobject *result, Transform<K> *keyTransform,
                               Transform<V> *valueTransform) {
     JNI_LOGI("ConvertJavaMap: begin.");
@@ -569,14 +569,14 @@ void JNIUtils::ConvertJavaMap(JNIEnv *env, std::map<K, V> *source,
                               GetUtilJMethodID(JavaUtilMethod::MapInit));
     (*result) = static_cast<jobjectArray>(env->NewGlobalRef(map));
     for (auto it = source->begin(); it != source->end(); it++) {
-        jobject jKey = keyTransform->CreateObject(it->first);
-        jobject jValue = valueTransform->CreateObject(it->second);
+        jobject jKey = keyTransform->CreateObject(&(it->first));
+        jobject jValue = valueTransform->CreateObject(&(it->second));
         if (!jKey || !jValue) {
             JNI_LOGE("ConvertJavaMap: CreateObject failed.");
             break;
         }
-        keyTransform->Convert(jKey, it->first);
-        valueTransform->Convert(jKey, it->second);
+        keyTransform->Convert(jKey, &(it->first));
+        valueTransform->Convert(jValue, &(it->second));
         env->CallObjectMethod(
             *result, GetUtilJMethodID(JavaUtilMethod::Map_put), jKey, jValue);
     }
@@ -584,7 +584,7 @@ void JNIUtils::ConvertJavaMap(JNIEnv *env, std::map<K, V> *source,
 }
 
 template <class T>
-void JNIUtils::ConvertJavaList(JNIEnv *env, std::vector<T> *source,
+void JNIUtils::ConvertJavaList(JNIEnv *env, const std::vector<T> *source,
                                jobject *result, Transform<T> *transform) {
     JNI_LOGI("ConvertJavaList: begin.");
     if (!source || !transform) {
@@ -657,7 +657,7 @@ void JNIUtils::CallJavaMapMethod(JNIEnv *env, const JNIMethodInfo *methodInfo,
                                  Transform<V> *valueTransform) {
     jobject source = CallJavaObjectMethod(env, methodInfo, holder, param);
     if (source) {
-        ExtractJavaMap(source, result, keyTransform, valueTransform);
+        ExtractJavaMap(env, source, result, keyTransform, valueTransform);
         env->DeleteLocalRef(source);
     }
 }
@@ -699,14 +699,14 @@ void JNIUtils::GetMapField(JNIEnv *env, jobject object, JNIFieldInfo *info,
                            Transform<V> *valueTransform) {
     jobject source = GetObjectField(env, object, info);
     if (source) {
-        ExtractJavaMap(source, result, keyTransform, valueTransform);
+        ExtractJavaMap(env, source, result, keyTransform, valueTransform);
         env->DeleteLocalRef(source);
     }
 }
 
 template <typename T>
 void JNIUtils::SetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                              T *source, Transform<T> *transform) {
+                              const T *source, Transform<T> *transform) {
     jobject target = transform->CreateObject(source);
     if (target) {
         JNI_LOGE("ConvertJavaMap: CreateObject failed.");
@@ -718,7 +718,8 @@ void JNIUtils::SetObjectField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 template <typename T>
 void JNIUtils::SetObjectArrayField(JNIEnv *env, jobject object,
-                                   JNIFieldInfo *info, std::vector<T> *source,
+                                   JNIFieldInfo *info,
+                                   const std::vector<T> *source,
                                    Transform<T> *transform) {
     jobjectArray target;
     ConvertJavaObjectArray(env, source, &target, transform);
@@ -730,7 +731,8 @@ void JNIUtils::SetObjectArrayField(JNIEnv *env, jobject object,
 
 template <typename T>
 void JNIUtils::SetListField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                            std::vector<T> *source, Transform<T> *transform) {
+                            const std::vector<T> *source,
+                            Transform<T> *transform) {
     jobject target;
     ConvertJavaList(env, source, &target, transform);
     if (target) {
@@ -741,7 +743,8 @@ void JNIUtils::SetListField(JNIEnv *env, jobject object, JNIFieldInfo *info,
 
 template <typename K, typename V>
 void JNIUtils::SetMapField(JNIEnv *env, jobject object, JNIFieldInfo *info,
-                           std::map<K, V> *source, Transform<K> *keyTransform,
+                           const std::map<K, V> *source,
+                           Transform<K> *keyTransform,
                            Transform<V> *valueTransform) {
     jobject target;
     ConvertJavaMap(env, source, &target, keyTransform, valueTransform);

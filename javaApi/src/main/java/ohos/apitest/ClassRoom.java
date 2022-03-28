@@ -15,8 +15,12 @@ public class ClassRoom {
     @JNIField(sign = "Ljava/util/Map;")
     public Map<Integer, Books> books;
 
-    void tets() {
-        books.entrySet();
-//        books.entry();
+    @Override
+    public String toString() {
+        return "ClassRoom{" +
+                "name='" + name + '\'' +
+                ", students=" + students +
+                ", books=" + books +
+                '}';
     }
 }

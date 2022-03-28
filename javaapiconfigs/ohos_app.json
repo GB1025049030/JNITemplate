@@ -6,31 +6,43 @@
           "args":[],
           "overloadSN":1,
           "returnObject":{
-            "flag":4096,
-            "arrayDimension":1,
-            "clsName":"ohos/aafwk/ability/RunningProcessInfo",
-            "sign":"[Lohos/aafwk/ability/RunningProcessInfo;"
+            "baseType":{
+              "flag":8192,
+              "arrayDimension":0,
+              "clsName":"java/util/List",
+              "sign":"Ljava/util/List;",
+              "additionalValue":{
+                "flag":4096,
+                "arrayDimension":0,
+                "clsName":"ohos/aafwk/ability/RunningProcessInfo",
+                "sign":"Lohos/aafwk/ability/RunningProcessInfo;"
+              }
+            }
           },
           "name":"getAllRunningProcesses",
-          "sign":"()[Lohos/aafwk/ability/RunningProcessInfo;",
+          "sign":"()Ljava/util/List;",
           "id":1
         },
         {
           "args":[
             {
-              "flag":2048,
-              "arrayDimension":0,
-              "clsName":"java/lang/String",
-              "sign":"Ljava/lang/String;",
+              "baseType":{
+                "flag":2048,
+                "arrayDimension":0,
+                "clsName":"java/lang/String",
+                "sign":"Ljava/lang/String;"
+              },
               "order":1
             }
           ],
           "overloadSN":1,
           "returnObject":{
-            "flag":4,
-            "arrayDimension":0,
-            "clsName":"V",
-            "sign":"V"
+            "baseType":{
+              "flag":4,
+              "arrayDimension":0,
+              "clsName":"V",
+              "sign":"V"
+            }
           },
           "name":"killProcessesByBundleName",
           "sign":"(Ljava/lang/String;)V",
@@ -39,50 +51,72 @@
         {
           "args":[
             {
-              "flag":64,
-              "arrayDimension":0,
-              "clsName":"I",
-              "sign":"I",
+              "baseType":{
+                "flag":64,
+                "arrayDimension":0,
+                "clsName":"I",
+                "sign":"I"
+              },
               "order":1
             },
             {
-              "flag":64,
-              "arrayDimension":0,
-              "clsName":"I",
-              "sign":"I",
+              "baseType":{
+                "flag":64,
+                "arrayDimension":0,
+                "clsName":"I",
+                "sign":"I"
+              },
               "order":2
             }
           ],
           "overloadSN":1,
           "returnObject":{
-            "flag":4096,
-            "arrayDimension":1,
-            "clsName":"ohos/aafwk/ability/AbilityMissionInfo",
-            "sign":"[Lohos/aafwk/ability/AbilityMissionInfo;"
+            "baseType":{
+              "flag":8192,
+              "arrayDimension":0,
+              "clsName":"java/util/List",
+              "sign":"Ljava/util/List;",
+              "additionalValue":{
+                "flag":4096,
+                "arrayDimension":0,
+                "clsName":"ohos/aafwk/ability/AbilityMissionInfo",
+                "sign":"Lohos/aafwk/ability/AbilityMissionInfo;"
+              }
+            }
           },
           "name":"queryRecentAbilityMissionInfo",
-          "sign":"(II)[Lohos/aafwk/ability/AbilityMissionInfo;",
+          "sign":"(II)Ljava/util/List;",
           "id":3
         },
         {
           "args":[
             {
-              "flag":64,
-              "arrayDimension":0,
-              "clsName":"I",
-              "sign":"I",
+              "baseType":{
+                "flag":64,
+                "arrayDimension":0,
+                "clsName":"I",
+                "sign":"I"
+              },
               "order":1
             }
           ],
           "overloadSN":1,
           "returnObject":{
-            "flag":4096,
-            "arrayDimension":1,
-            "clsName":"ohos/aafwk/ability/AbilityMissionInfo",
-            "sign":"[Lohos/aafwk/ability/AbilityMissionInfo;"
+            "baseType":{
+              "flag":8192,
+              "arrayDimension":0,
+              "clsName":"java/util/List",
+              "sign":"Ljava/util/List;",
+              "additionalValue":{
+                "flag":4096,
+                "arrayDimension":0,
+                "clsName":"ohos/aafwk/ability/AbilityMissionInfo",
+                "sign":"Lohos/aafwk/ability/AbilityMissionInfo;"
+              }
+            }
           },
           "name":"queryRunningAbilityMissionInfo",
-          "sign":"(I)[Lohos/aafwk/ability/AbilityMissionInfo;",
+          "sign":"(I)Ljava/util/List;",
           "id":4
         }
       ],

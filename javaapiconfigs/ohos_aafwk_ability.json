@@ -6,36 +6,44 @@
       "className":"ohos/aafwk/ability/AbilityMissionInfo",
       "fields":[
         {
-          "flag":4096,
-          "arrayDimension":0,
-          "clsName":"ohos/bundle/base/ElementName",
           "name":"mAbilityBaseBundleName",
-          "sign":"Lohos/bundle/base/ElementName;",
-          "id":1
+          "id":1,
+          "baseType":{
+            "flag":4096,
+            "arrayDimension":0,
+            "clsName":"ohos/bundle/base/ElementName",
+            "sign":"Lohos/bundle/base/ElementName;"
+          }
         },
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"mAbilityMissionId",
-          "sign":"I",
-          "id":2
+          "id":2,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         },
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"mAbilityStackId",
-          "sign":"I",
-          "id":3
+          "id":3,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         },
         {
-          "flag":4096,
-          "arrayDimension":0,
-          "clsName":"ohos/bundle/base/ElementName",
           "name":"mAbilityTopBundleName",
-          "sign":"Lohos/bundle/base/ElementName;",
-          "id":4
+          "id":4,
+          "baseType":{
+            "flag":4096,
+            "arrayDimension":0,
+            "clsName":"ohos/bundle/base/ElementName",
+            "sign":"Lohos/bundle/base/ElementName;"
+          }
         }
       ]
     },
@@ -45,60 +53,74 @@
       "className":"ohos/aafwk/ability/RunningProcessInfo",
       "fields":[
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"mLastMemoryLevel",
-          "sign":"I",
-          "id":5
+          "id":5,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         },
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"mPid",
-          "sign":"I",
-          "id":6
+          "id":6,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         },
         {
-          "flag":2048,
-          "arrayDimension":1,
-          "clsName":"java/lang/String",
           "name":"mPkgList",
-          "sign":"[Ljava/lang/String;",
-          "id":7
+          "id":7,
+          "baseType":{
+            "flag":2048,
+            "arrayDimension":1,
+            "clsName":"java/lang/String",
+            "sign":"[Ljava/lang/String;"
+          }
         },
         {
-          "flag":2048,
-          "arrayDimension":0,
-          "clsName":"java/lang/String",
           "name":"mProcessName",
-          "sign":"Ljava/lang/String;",
-          "id":8
+          "id":8,
+          "baseType":{
+            "flag":2048,
+            "arrayDimension":0,
+            "clsName":"java/lang/String",
+            "sign":"Ljava/lang/String;"
+          }
         },
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"mUid",
-          "sign":"I",
-          "id":9
+          "id":9,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         },
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"mWeight",
-          "sign":"I",
-          "id":10
+          "id":10,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         },
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"mWeightReasonCode",
-          "sign":"I",
-          "id":11
+          "id":11,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         }
       ]
     }

@@ -1313,7 +1313,7 @@ void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     uint8_t *source) {
+                                     const uint8_t *source) {
     JNI_LOGI("SetFieldValue(boolean): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1344,7 +1344,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     int8_t *source) {
+                                     const int8_t *source) {
     JNI_LOGI("SetFieldValue(byte): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1375,7 +1375,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     uint16_t *source) {
+                                     const uint16_t *source) {
     JNI_LOGI("SetFieldValue(char): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1406,7 +1406,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     int16_t *source) {
+                                     const int16_t *source) {
     JNI_LOGI("SetFieldValue(short): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1437,7 +1437,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     int32_t *source) {
+                                     const int32_t *source) {
     JNI_LOGI("SetFieldValue(int): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1468,7 +1468,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     int64_t *source) {
+                                     const int64_t *source) {
     JNI_LOGI("SetFieldValue(long): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1499,7 +1499,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     float *source) {
+                                     const float *source) {
     JNI_LOGI("SetFieldValue(float): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1530,7 +1530,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     double *source) {
+                                     const double *source) {
     JNI_LOGI("SetFieldValue(double): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1561,7 +1561,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::string *source) {
+                                     const std::string *source) {
     JNI_LOGI("SetFieldValue(String): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1571,6 +1571,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(String) : param error");
         return;
     }
+    JNI_LOGI("SetFieldValue(String): value : %" LOG_LIMIT "s", source->c_str());
     int32_t type;
     if (JNIInfoUtil::CheckIsType(&(info.fieldInfo.baseType),
                                  MethodFlag::FLAG_JNI_METHOD_RETURN_STRING,
@@ -1592,7 +1593,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<uint8_t> *source) {
+                                     const std::vector<uint8_t> *source) {
     JNI_LOGI("SetFieldValue(BooleanArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1602,7 +1603,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(BooleanArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(BooleanArray) : source is empty");
         return;
     }
@@ -1632,7 +1633,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<int8_t> *source) {
+                                     const std::vector<int8_t> *source) {
     JNI_LOGI("SetFieldValue(ByteArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1642,7 +1643,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(ByteArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(ByteArray) : source is empty");
         return;
     }
@@ -1672,7 +1673,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<uint16_t> *source) {
+                                     const std::vector<uint16_t> *source) {
     JNI_LOGI("SetFieldValue(CharArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1682,7 +1683,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(CharArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(CharArray) : source is empty");
         return;
     }
@@ -1712,7 +1713,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<int16_t> *source) {
+                                     const std::vector<int16_t> *source) {
     JNI_LOGI("SetFieldValue(ShortArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1722,7 +1723,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(ShortArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(ShortArray) : source is empty");
         return;
     }
@@ -1752,7 +1753,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<int32_t> *source) {
+                                     const std::vector<int32_t> *source) {
     JNI_LOGI("SetFieldValue(IntArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1762,7 +1763,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(IntArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(IntArray) : source is empty");
         return;
     }
@@ -1792,7 +1793,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<int64_t> *source) {
+                                     const std::vector<int64_t> *source) {
     JNI_LOGI("SetFieldValue(LongArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1802,7 +1803,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(LongArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(LongArray) : source is empty");
         return;
     }
@@ -1832,7 +1833,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<float> *source) {
+                                     const std::vector<float> *source) {
     JNI_LOGI("SetFieldValue(FloatArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1842,7 +1843,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(FloatArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(FloatArray) : source is empty");
         return;
     }
@@ -1872,7 +1873,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<double> *source) {
+                                     const std::vector<double> *source) {
     JNI_LOGI("SetFieldValue(DoubleArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1882,7 +1883,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(DoubleArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(DoubleArray) : source is empty");
         return;
     }
@@ -1912,7 +1913,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
 }
 
 void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
-                                     std::vector<std::string> *source) {
+                                     const std::vector<std::string> *source) {
     JNI_LOGI("SetFieldValue(StringArray): begin(%" LOG_LIMIT "d)", fieldID);
     JNIFieldInfo info;
     if (GetJNIFieldInfo(fieldID, &info) != JNI_OK) {
@@ -1922,7 +1923,7 @@ void JSCallAndroidJni::SetFieldValue(jobject object, int32_t fieldID,
         JNI_LOGE("SetFieldValue(StringArray) : param error");
         return;
     }
-    if (source->size() == 0) {
+    if (source->empty()) {
         JNI_LOGW("SetFieldValue(StringArray) : source is empty");
         return;
     }
@@ -2262,7 +2263,7 @@ void TransformBoolean::Extract(jobject source, jboolean *target) {
         instance->GetUtilJMethodID(JavaUtilMethod::Boolean_booleanValue));
 }
 
-jobject TransformBoolean::CreateObject(jboolean *source) {
+jobject TransformBoolean::CreateObject(const jboolean *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2288,7 +2289,7 @@ void TransformByte::Extract(jobject source, jbyte *target) {
         source, instance->GetUtilJMethodID(JavaUtilMethod::Byte_byteValue));
 }
 
-jobject TransformByte::CreateObject(jbyte *source) {
+jobject TransformByte::CreateObject(const jbyte *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2315,7 +2316,7 @@ void TransformChar::Extract(jobject source, jchar *target) {
         instance->GetUtilJMethodID(JavaUtilMethod::Character_charValue));
 }
 
-jobject TransformChar::CreateObject(jchar *source) {
+jobject TransformChar::CreateObject(const jchar *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2341,7 +2342,7 @@ void TransformShort::Extract(jobject source, jshort *target) {
         source, instance->GetUtilJMethodID(JavaUtilMethod::Short_shortValue));
 }
 
-jobject TransformShort::CreateObject(jshort *source) {
+jobject TransformShort::CreateObject(const jshort *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2367,7 +2368,7 @@ void TransformInt::Extract(jobject source, jint *target) {
         source, instance->GetUtilJMethodID(JavaUtilMethod::Integer_intValue));
 }
 
-jobject TransformInt::CreateObject(jint *source) {
+jobject TransformInt::CreateObject(const jint *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2393,7 +2394,7 @@ void TransformLong::Extract(jobject source, jlong *target) {
         source, instance->GetUtilJMethodID(JavaUtilMethod::Long_longValue));
 }
 
-jobject TransformLong::CreateObject(jlong *source) {
+jobject TransformLong::CreateObject(const jlong *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2419,7 +2420,7 @@ void TransformFloat::Extract(jobject source, jfloat *target) {
         source, instance->GetUtilJMethodID(JavaUtilMethod::Float_floatValue));
 }
 
-jobject TransformFloat::CreateObject(jfloat *source) {
+jobject TransformFloat::CreateObject(const jfloat *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2445,7 +2446,7 @@ void TransformDouble::Extract(jobject source, jdouble *target) {
         source, instance->GetUtilJMethodID(JavaUtilMethod::Double_doubleValue));
 }
 
-jobject TransformDouble::CreateObject(jdouble *source) {
+jobject TransformDouble::CreateObject(const jdouble *source) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
         return nullptr;
@@ -2470,7 +2471,7 @@ void TransformString::Extract(jobject source, std::string *target) {
     instance->ExtractJavaString((jstring)source, target);
 }
 
-jobject TransformString::CreateObject(std::string *source) {
+jobject TransformString::CreateObject(const std::string *source) {
     std::shared_ptr<JSCallAndroidJni> instance =
         DelayedSingleton<JSCallAndroidJni>::GetInstance();
     jstring result;

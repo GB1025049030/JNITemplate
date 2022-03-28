@@ -3,23 +3,82 @@
     {
       "methods":[],
       "pkgName":"ohos/apitest",
+      "className":"ohos/apitest/Books",
+      "fields":[
+        {
+          "name":"chinese",
+          "id":1,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
+        },
+        {
+          "name":"math",
+          "id":2,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
+        }
+      ]
+    },
+    {
+      "methods":[],
+      "pkgName":"ohos/apitest",
       "className":"ohos/apitest/ClassRoom",
       "fields":[
         {
-          "flag":2048,
-          "arrayDimension":0,
-          "clsName":"java/lang/String",
-          "name":"name",
-          "sign":"Ljava/lang/String;",
-          "id":1
+          "name":"books",
+          "id":3,
+          "baseType":{
+            "flag":16384,
+            "arrayDimension":0,
+            "additionalKey":{
+              "flag":64,
+              "arrayDimension":0,
+              "clsName":"java/lang/Integer",
+              "sign":"I"
+            },
+            "clsName":"java/util/Map",
+            "sign":"Ljava/util/Map;",
+            "additionalValue":{
+              "flag":4096,
+              "arrayDimension":0,
+              "clsName":"ohos/apitest/Books",
+              "sign":"Lohos/apitest/Books;"
+            }
+          }
         },
         {
-          "flag":4096,
-          "arrayDimension":1,
-          "clsName":"ohos/apitest/Student",
+          "name":"name",
+          "id":4,
+          "baseType":{
+            "flag":2048,
+            "arrayDimension":0,
+            "clsName":"java/lang/String",
+            "sign":"Ljava/lang/String;"
+          }
+        },
+        {
           "name":"students",
-          "sign":"[Lohos/apitest/Student;",
-          "id":2
+          "id":5,
+          "baseType":{
+            "flag":8192,
+            "arrayDimension":0,
+            "clsName":"java/util/List",
+            "sign":"Ljava/util/List;",
+            "additionalValue":{
+              "flag":4096,
+              "arrayDimension":0,
+              "clsName":"ohos/apitest/Student",
+              "sign":"Lohos/apitest/Student;"
+            }
+          }
         }
       ]
     },
@@ -28,23 +87,106 @@
         {
           "args":[
             {
-              "flag":4096,
-              "arrayDimension":0,
-              "clsName":"ohos/apitest/ClassRoom",
-              "sign":"Lohos/apitest/ClassRoom;",
+              "baseType":{
+                "flag":4096,
+                "arrayDimension":0,
+                "clsName":"ohos/apitest/ClassRoom",
+                "sign":"Lohos/apitest/ClassRoom;"
+              },
               "order":1
             }
           ],
           "overloadSN":1,
           "returnObject":{
-            "flag":5,
-            "arrayDimension":0,
-            "clsName":"V",
-            "sign":"V"
+            "baseType":{
+              "flag":5,
+              "arrayDimension":0,
+              "clsName":"V",
+              "sign":"V"
+            }
           },
           "name":"addClassRoom",
           "sign":"(Lohos/apitest/ClassRoom;)V",
           "id":1
+        },
+        {
+          "args":[
+            {
+              "baseType":{
+                "flag":8192,
+                "arrayDimension":0,
+                "clsName":"java/util/List",
+                "sign":"Ljava/util/List;",
+                "additionalValue":{
+                  "flag":4096,
+                  "arrayDimension":0,
+                  "clsName":"ohos/apitest/ClassRoom",
+                  "sign":"Lohos/apitest/ClassRoom;"
+                }
+              },
+              "order":1
+            }
+          ],
+          "overloadSN":1,
+          "returnObject":{
+            "baseType":{
+              "flag":5,
+              "arrayDimension":0,
+              "clsName":"V",
+              "sign":"V"
+            }
+          },
+          "name":"addClassRooms",
+          "sign":"(Ljava/util/List;)V",
+          "id":2
+        },
+        {
+          "args":[],
+          "overloadSN":1,
+          "returnObject":{
+            "baseType":{
+              "flag":8193,
+              "arrayDimension":0,
+              "clsName":"java/util/List",
+              "sign":"Ljava/util/List;",
+              "additionalValue":{
+                "flag":4096,
+                "arrayDimension":0,
+                "clsName":"ohos/apitest/ClassRoom",
+                "sign":"Lohos/apitest/ClassRoom;"
+              }
+            }
+          },
+          "name":"getClassRooms",
+          "sign":"()Ljava/util/List;",
+          "id":3
+        },
+        {
+          "args":[],
+          "overloadSN":1,
+          "returnObject":{
+            "baseType":{
+              "flag":16385,
+              "arrayDimension":0,
+              "additionalKey":{
+                "flag":64,
+                "arrayDimension":0,
+                "clsName":"java/lang/Integer",
+                "sign":"I"
+              },
+              "clsName":"java/util/Map",
+              "sign":"Ljava/util/Map;",
+              "additionalValue":{
+                "flag":4096,
+                "arrayDimension":0,
+                "clsName":"ohos/apitest/Books",
+                "sign":"Lohos/apitest/Books;"
+              }
+            }
+          },
+          "name":"getFirstBooks",
+          "sign":"()Ljava/util/Map;",
+          "id":4
         }
       ],
       "pkgName":"ohos/apitest",
@@ -57,20 +199,34 @@
       "className":"ohos/apitest/Student",
       "fields":[
         {
-          "flag":64,
-          "arrayDimension":0,
-          "clsName":"I",
           "name":"age",
-          "sign":"I",
-          "id":3
+          "id":6,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
         },
         {
-          "flag":2048,
-          "arrayDimension":0,
-          "clsName":"java/lang/String",
+          "name":"id",
+          "id":7,
+          "baseType":{
+            "flag":64,
+            "arrayDimension":0,
+            "clsName":"I",
+            "sign":"I"
+          }
+        },
+        {
           "name":"name",
-          "sign":"Ljava/lang/String;",
-          "id":4
+          "id":8,
+          "baseType":{
+            "flag":2048,
+            "arrayDimension":0,
+            "clsName":"java/lang/String",
+            "sign":"Ljava/lang/String;"
+          }
         }
       ]
     }
