@@ -709,6 +709,31 @@ void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
     }
 }
 
+void JSCallAndroidJni::CallJavaMethod(int32_t methodID, jobject object,
+                                      jvalue *param, jobject *result) {
+    JNI_LOGI("CallJavaMethod(Object): begin.");
+    JNIMethodInfo methodInfo;
+    if (GetJNIMethodInfo(methodID, &methodInfo) != JNI_OK) {
+        return;
+    }
+    int32_t returnType;
+    if (JNIInfoUtil::CheckIsType(&(methodInfo.returnObject.baseType),
+                                 MethodFlag::FLAG_JNI_METHOD_RETURN_OBJECT,
+                                 &returnType)) {
+        JNIEnv *env = GetJNIEnv();
+        if (env) {
+            (*result) =
+                jniUtils->CallJavaObjectMethod(env, &methodInfo, object, param);
+        }
+    } else {
+        JNI_LOGE(
+            "CallJavaMethod(Object): Type Err, current(arrayDimension: "
+            "%" LOG_LIMIT "d, type: %" LOG_LIMIT "d)",
+            methodInfo.returnObject.baseType.arrayDimension,
+            (int32_t)returnType);
+    }
+}
+
 void JSCallAndroidJni::GetFieldValue(jobject object, int32_t fieldID,
                                      uint8_t *target) {
     JNI_LOGI("GetFieldValue(boolean): begin(%" LOG_LIMIT "d)", fieldID);
@@ -2201,7 +2226,7 @@ void JSCallAndroidJni::ConvertJavaString(std::string *source, jstring *result) {
     jniUtils->ConvertJavaString(env, source, result);
 }
 
-void JSCallAndroidJni::ConvertJavaString(std::string const *source,
+void JSCallAndroidJni::ConvertJavaString(const std::string *source,
                                          jstring *result) {
     Jkit jkit;
     if ((jkit.IsValidEnv() & 1) == 0) {
@@ -2461,11 +2486,6 @@ jobject TransformDouble::CreateObject(const jdouble *source) {
 }
 
 void TransformString::Extract(jobject source, std::string *target) {
-    Jkit jkit;
-    if ((jkit.IsValidEnv() & 1) == 0) {
-        return;
-    }
-    JNIEnv *env = jkit.operator->();
     std::shared_ptr<JSCallAndroidJni> instance =
         DelayedSingleton<JSCallAndroidJni>::GetInstance();
     instance->ExtractJavaString((jstring)source, target);

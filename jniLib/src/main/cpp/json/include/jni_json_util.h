@@ -2,8 +2,8 @@
 // Created by guobin on 2022/3/7.
 //
 
-#ifndef JNITEMPLATE_JSON_UTIL_H
-#define JNITEMPLATE_JSON_UTIL_H
+#ifndef JNITEMPLATE_JNI_JSON_UTIL_H
+#define JNITEMPLATE_JNI_JSON_UTIL_H
 
 #include <nlohmann/json.hpp>
 
@@ -168,4 +168,4 @@ void GetValueIfFindKey(
 }  // namespace TEMPLATE
 }  // namespace OHOS
 
-#endif  // JNITEMPLATE_JSON_UTIL_H
+#endif  // JNITEMPLATE_JNI_JSON_UTIL_H

@@ -21,7 +21,7 @@
           },
           "name":"getAllRunningProcesses",
           "sign":"()Ljava/util/List;",
-          "id":1
+          "id":7
         },
         {
           "args":[
@@ -46,7 +46,7 @@
           },
           "name":"killProcessesByBundleName",
           "sign":"(Ljava/lang/String;)V",
-          "id":2
+          "id":8
         },
         {
           "args":[
@@ -86,7 +86,7 @@
           },
           "name":"queryRecentAbilityMissionInfo",
           "sign":"(II)Ljava/util/List;",
-          "id":3
+          "id":9
         },
         {
           "args":[
@@ -117,7 +117,7 @@
           },
           "name":"queryRunningAbilityMissionInfo",
           "sign":"(I)Ljava/util/List;",
-          "id":4
+          "id":10
         }
       ],
       "pkgName":"ohos/app",

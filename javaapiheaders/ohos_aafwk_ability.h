@@ -40,7 +40,7 @@ class TransformAbilityMissionInfo : public Transform<AbilityMissionInfo> {
     public:
         void Extract(jobject source, AbilityMissionInfo *target) override;
         void Convert(jobject target, const AbilityMissionInfo *source) override;
-        jobject CreateObject(const AbilityMissionInfo *source) override;
+        jobject CreateJavaObject(const AbilityMissionInfo *source) override;
         void Release() override;
 };
 
@@ -49,7 +49,7 @@ class TransformRunningProcessInfo : public Transform<RunningProcessInfo> {
     public:
         void Extract(jobject source, RunningProcessInfo *target) override;
         void Convert(jobject target, const RunningProcessInfo *source) override;
-        jobject CreateObject(const RunningProcessInfo *source) override;
+        jobject CreateJavaObject(const RunningProcessInfo *source) override;
         void Release() override;
 };
 

@@ -83,7 +83,7 @@ class TransformInstalledBundleInfo : public Transform<InstalledBundleInfo> {
     public:
         void Extract(jobject source, InstalledBundleInfo *target) override;
         void Convert(jobject target, const InstalledBundleInfo *source) override;
-        jobject CreateObject(const InstalledBundleInfo *source) override;
+        jobject CreateJavaObject(const InstalledBundleInfo *source) override;
         void Release() override;
 };
 
@@ -92,7 +92,7 @@ class TransformInstalledFormResourceInfo : public Transform<InstalledFormResourc
     public:
         void Extract(jobject source, InstalledFormResourceInfo *target) override;
         void Convert(jobject target, const InstalledFormResourceInfo *source) override;
-        jobject CreateObject(const InstalledFormResourceInfo *source) override;
+        jobject CreateJavaObject(const InstalledFormResourceInfo *source) override;
         void Release() override;
 };
 
@@ -101,7 +101,7 @@ class TransformInstalledForms : public Transform<InstalledForms> {
     public:
         void Extract(jobject source, InstalledForms *target) override;
         void Convert(jobject target, const InstalledForms *source) override;
-        jobject CreateObject(const InstalledForms *source) override;
+        jobject CreateJavaObject(const InstalledForms *source) override;
         void Release() override;
 };
 
@@ -110,7 +110,7 @@ class TransformInstallShellInfo : public Transform<InstallShellInfo> {
     public:
         void Extract(jobject source, InstallShellInfo *target) override;
         void Convert(jobject target, const InstallShellInfo *source) override;
-        jobject CreateObject(const InstallShellInfo *source) override;
+        jobject CreateJavaObject(const InstallShellInfo *source) override;
         void Release() override;
 };
 
@@ -119,7 +119,7 @@ class TransformPackageInstalledStatus : public Transform<PackageInstalledStatus>
     public:
         void Extract(jobject source, PackageInstalledStatus *target) override;
         void Convert(jobject target, const PackageInstalledStatus *source) override;
-        jobject CreateObject(const PackageInstalledStatus *source) override;
+        jobject CreateJavaObject(const PackageInstalledStatus *source) override;
         void Release() override;
 };
 
@@ -128,64 +128,64 @@ class TransformShortcutIntent : public Transform<ShortcutIntent> {
     public:
         void Extract(jobject source, ShortcutIntent *target) override;
         void Convert(jobject target, const ShortcutIntent *source) override;
-        jobject CreateObject(const ShortcutIntent *source) override;
+        jobject CreateJavaObject(const ShortcutIntent *source) override;
         void Release() override;
 };
 
 enum class InstalledBundleInfo_FIELD_CODE {
-    appId = 1,
-    bundleName = 2,
-    enabledAbilities = 3,
-    isSystemApp = 4,
-    sourceDir = 5,
-    splitNames = 6,
-    uid = 7,
-    userId = 8,
+    appId = 49,
+    bundleName = 50,
+    enabledAbilities = 51,
+    isSystemApp = 52,
+    sourceDir = 53,
+    splitNames = 54,
+    uid = 55,
+    userId = 56,
 };
 
 enum class InstalledFormResourceInfo_FIELD_CODE {
-    abilityName = 9,
-    bundleName = 10,
-    descriptionId = 11,
-    hapSourceDir = 12,
-    isJsForm = 13,
-    landscapeLayoutIds = 14,
-    moduleName = 15,
-    name = 16,
-    originalBundleName = 17,
-    packageName = 18,
-    portraitLayoutIds = 19,
+    abilityName = 57,
+    bundleName = 58,
+    descriptionId = 59,
+    hapSourceDir = 60,
+    isJsForm = 61,
+    landscapeLayoutIds = 62,
+    moduleName = 63,
+    name = 64,
+    originalBundleName = 65,
+    packageName = 66,
+    portraitLayoutIds = 67,
 };
 
 enum class InstalledForms_FIELD_CODE {
-    bundleName = 20,
-    forms = 21,
-    hapSourceDirs = 22,
-    originalBundleName = 23,
-    packageName = 24,
+    bundleName = 68,
+    forms = 69,
+    hapSourceDirs = 70,
+    originalBundleName = 71,
+    packageName = 72,
 };
 
 enum class InstallShellInfo_FIELD_CODE {
-    entryHap = 25,
-    featureHaps = 26,
-    installerUid = 27,
-    installLocation = 28,
-    isAppend = 29,
-    packageName = 30,
-    provisioningBundleName = 31,
-    restrictedPermissions = 32,
-    userId = 33,
+    entryHap = 73,
+    featureHaps = 74,
+    installerUid = 75,
+    installLocation = 76,
+    isAppend = 77,
+    packageName = 78,
+    provisioningBundleName = 79,
+    restrictedPermissions = 80,
+    userId = 81,
 };
 
 enum class PackageInstalledStatus_FIELD_CODE {
-    shellInstalledDir = 34,
-    status = 35,
-    statusMessage = 36,
+    shellInstalledDir = 82,
+    status = 83,
+    statusMessage = 84,
 };
 
 enum class ShortcutIntent_FIELD_CODE {
-    targetBundle = 37,
-    targetClass = 38,
+    targetBundle = 85,
+    targetClass = 86,
 };
 
 enum class MethodCode_OHOS_BUNDLEMGR {
@@ -195,21 +195,21 @@ enum class MethodCode_OHOS_BUNDLEMGR {
      * isStaticMethod: true
      * isNonvirtualMethod: false
      */
-    BundleMgrAdapter_getPairBundleName_1 = 1,
+    BundleMgrAdapter_getPairBundleName_1 = 11,
 
     /**
      * sign: (Lohos/bundlemgr/InstallShellInfo;)Lohos/bundlemgr/PackageInstalledStatus;
      * isStaticMethod: true
      * isNonvirtualMethod: false
      */
-    BundleMgrAdapter_installShellApk_1 = 2,
+    BundleMgrAdapter_installShellApk_1 = 12,
 
     /**
      * sign: (Ljava/lang/String;IZ)Lohos/bundlemgr/PackageInstalledStatus;
      * isStaticMethod: true
      * isNonvirtualMethod: false
      */
-    BundleMgrAdapter_uninstallShellApk_1 = 3,
+    BundleMgrAdapter_uninstallShellApk_1 = 13,
 };
 
 } // namespace BUNDLEMGR

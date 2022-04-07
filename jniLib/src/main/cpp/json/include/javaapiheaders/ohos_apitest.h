@@ -66,20 +66,20 @@ class TransformStudent : public Transform<Student> {
 };
 
 enum class Books_FIELD_CODE {
-    chinese = 1,
-    math = 2,
+    chinese = 12,
+    math = 13,
 };
 
 enum class ClassRoom_FIELD_CODE {
-    books = 3,
-    name = 4,
-    students = 5,
+    books = 14,
+    name = 15,
+    students = 16,
 };
 
 enum class Student_FIELD_CODE {
-    age = 6,
-    id = 7,
-    name = 8,
+    age = 17,
+    id = 18,
+    name = 19,
 };
 
 enum class MethodCode_OHOS_APITEST {
@@ -99,18 +99,32 @@ enum class MethodCode_OHOS_APITEST {
     SchoolManager_addClassRooms_1 = 2,
 
     /**
+     * sign: ()Lohos/apitest/ClassRoom;
+     * isStaticMethod: false
+     * isNonvirtualMethod: false
+     */
+    SchoolManager_getClassRoomFirst_1 = 3,
+
+    /**
      * sign: ()Ljava/util/List;
      * isStaticMethod: true
      * isNonvirtualMethod: false
      */
-    SchoolManager_getClassRooms_1 = 3,
+    SchoolManager_getClassRooms_1 = 4,
 
     /**
      * sign: ()Ljava/util/Map;
      * isStaticMethod: true
      * isNonvirtualMethod: false
      */
-    SchoolManager_getFirstBooks_1 = 4,
+    SchoolManager_getFirstBooks_1 = 5,
+
+    /**
+     * sign: ()Lohos/apitest/SchoolManager;
+     * isStaticMethod: true
+     * isNonvirtualMethod: false
+     */
+    SchoolManager_getInstance_1 = 6,
 };
 
 } // namespace APITEST

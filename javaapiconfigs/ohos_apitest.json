@@ -7,7 +7,7 @@
       "fields":[
         {
           "name":"chinese",
-          "id":1,
+          "id":12,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -17,7 +17,7 @@
         },
         {
           "name":"math",
-          "id":2,
+          "id":13,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -34,7 +34,7 @@
       "fields":[
         {
           "name":"books",
-          "id":3,
+          "id":14,
           "baseType":{
             "flag":16384,
             "arrayDimension":0,
@@ -56,7 +56,7 @@
         },
         {
           "name":"name",
-          "id":4,
+          "id":15,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -66,7 +66,7 @@
         },
         {
           "name":"students",
-          "id":5,
+          "id":16,
           "baseType":{
             "flag":8192,
             "arrayDimension":0,
@@ -145,6 +145,21 @@
           "overloadSN":1,
           "returnObject":{
             "baseType":{
+              "flag":4096,
+              "arrayDimension":0,
+              "clsName":"ohos/apitest/ClassRoom",
+              "sign":"Lohos/apitest/ClassRoom;"
+            }
+          },
+          "name":"getClassRoomFirst",
+          "sign":"()Lohos/apitest/ClassRoom;",
+          "id":3
+        },
+        {
+          "args":[],
+          "overloadSN":1,
+          "returnObject":{
+            "baseType":{
               "flag":8193,
               "arrayDimension":0,
               "clsName":"java/util/List",
@@ -159,7 +174,7 @@
           },
           "name":"getClassRooms",
           "sign":"()Ljava/util/List;",
-          "id":3
+          "id":4
         },
         {
           "args":[],
@@ -186,7 +201,22 @@
           },
           "name":"getFirstBooks",
           "sign":"()Ljava/util/Map;",
-          "id":4
+          "id":5
+        },
+        {
+          "args":[],
+          "overloadSN":1,
+          "returnObject":{
+            "baseType":{
+              "flag":4097,
+              "arrayDimension":0,
+              "clsName":"ohos/apitest/SchoolManager",
+              "sign":"Lohos/apitest/SchoolManager;"
+            }
+          },
+          "name":"getInstance",
+          "sign":"()Lohos/apitest/SchoolManager;",
+          "id":6
         }
       ],
       "pkgName":"ohos/apitest",
@@ -200,7 +230,7 @@
       "fields":[
         {
           "name":"age",
-          "id":6,
+          "id":17,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -210,7 +240,7 @@
         },
         {
           "name":"id",
-          "id":7,
+          "id":18,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -220,7 +250,7 @@
         },
         {
           "name":"name",
-          "id":8,
+          "id":19,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,

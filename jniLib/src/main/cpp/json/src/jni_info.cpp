@@ -4,7 +4,7 @@
 
 #include "jni_info.h"
 
-#include "json_util.h"
+#include "jni_json_util.h"
 
 namespace OHOS {
 namespace TEMPLATE {

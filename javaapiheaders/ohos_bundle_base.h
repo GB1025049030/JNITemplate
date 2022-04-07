@@ -63,7 +63,7 @@ class TransformApplicationInfo : public Transform<ApplicationInfo> {
     public:
         void Extract(jobject source, ApplicationInfo *target) override;
         void Convert(jobject target, const ApplicationInfo *source) override;
-        jobject CreateObject(const ApplicationInfo *source) override;
+        jobject CreateJavaObject(const ApplicationInfo *source) override;
         void Release() override;
 };
 
@@ -72,7 +72,7 @@ class TransformElementName : public Transform<ElementName> {
     public:
         void Extract(jobject source, ElementName *target) override;
         void Convert(jobject target, const ElementName *source) override;
-        jobject CreateObject(const ElementName *source) override;
+        jobject CreateJavaObject(const ElementName *source) override;
         void Release() override;
 };
 
@@ -81,46 +81,46 @@ class TransformModuleInfo : public Transform<ModuleInfo> {
     public:
         void Extract(jobject source, ModuleInfo *target) override;
         void Convert(jobject target, const ModuleInfo *source) override;
-        jobject CreateObject(const ModuleInfo *source) override;
+        jobject CreateJavaObject(const ModuleInfo *source) override;
         void Release() override;
 };
 
 enum class ApplicationInfo_FIELD_CODE {
-    bundleName = 1,
-    cacheDir = 2,
-    codePath = 3,
-    dataBaseDir = 4,
-    dataDir = 5,
-    description = 6,
-    descriptionId = 7,
-    deviceId = 8,
-    enabled = 9,
-    entryDir = 10,
-    flags = 11,
-    icon = 12,
-    iconId = 13,
-    isLauncherApp = 14,
-    label = 15,
-    labelId = 16,
-    moduleInfos = 17,
-    moduleSourceDirs = 18,
-    name = 19,
-    permissions = 20,
-    process = 21,
-    signatureKey = 22,
-    supportedModes = 23,
-    systemApp = 24,
+    bundleName = 20,
+    cacheDir = 21,
+    codePath = 22,
+    dataBaseDir = 23,
+    dataDir = 24,
+    description = 25,
+    descriptionId = 26,
+    deviceId = 27,
+    enabled = 28,
+    entryDir = 29,
+    flags = 30,
+    icon = 31,
+    iconId = 32,
+    isLauncherApp = 33,
+    label = 34,
+    labelId = 35,
+    moduleInfos = 36,
+    moduleSourceDirs = 37,
+    name = 38,
+    permissions = 39,
+    process = 40,
+    signatureKey = 41,
+    supportedModes = 42,
+    systemApp = 43,
 };
 
 enum class ElementName_FIELD_CODE {
-    abilityName_ = 25,
-    bundleName_ = 26,
-    deviceId_ = 27,
+    abilityName_ = 44,
+    bundleName_ = 45,
+    deviceId_ = 46,
 };
 
 enum class ModuleInfo_FIELD_CODE {
-    moduleName = 28,
-    moduleSourceDir = 29,
+    moduleName = 47,
+    moduleSourceDir = 48,
 };
 
 } // namespace BASE

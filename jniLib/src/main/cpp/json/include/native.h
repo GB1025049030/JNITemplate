@@ -35,6 +35,8 @@ public:
 
     void GetClassRooms(std::vector<ClassRoom> *rooms);
 
+    void GetClassRoomFirst(ClassRoom* room);
+
     void GetFirstBooks(std::map<int, Books> *books);
 
     void AddClassRoom(ClassRoom room);

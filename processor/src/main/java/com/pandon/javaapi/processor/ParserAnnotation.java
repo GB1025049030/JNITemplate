@@ -148,9 +148,9 @@ public final class ParserAnnotation extends AbstractProcessor {
             List<String> keys = new ArrayList<>(jniClassInfo.mPkgInfos.keySet());
             Collections.sort(keys);
 
-            keys.forEach(key -> {
-                int methodId = 0;
-                int fieldId = 0;
+            int methodId = 0;
+            int fieldId = 0;
+            for (String key : keys) {
                 JniClassInfo.PackInfo packInfo = jniClassInfo.mPkgInfos.get(key);
                 if (packInfo != null && !packInfo.classes.isEmpty()) {
 
@@ -172,7 +172,7 @@ public final class ParserAnnotation extends AbstractProcessor {
                         }
                     }
                 }
-            });
+            }
 
             writeConfigs(jniClassInfo);
             writeHeaders(jniClassInfo);
@@ -224,7 +224,7 @@ public final class ParserAnnotation extends AbstractProcessor {
 
                 if (!cInfo.fields.isEmpty()) {
                     macro_sb.append(String.format(Constants.Format.MACRO_JAVA_BEAN,
-                                    simpleName, cInfo.className));
+                            simpleName, cInfo.className));
 
                     String _initSpace2 = getSpaceStr(1, _initSpace1);
 

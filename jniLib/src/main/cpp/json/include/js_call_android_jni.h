@@ -13,9 +13,9 @@
 
 #include "javaapiheaders/jni_method_flag.h"
 #include "jkit.h"
+#include "jni_json_util.h"
 #include "jni_transform.h"
 #include "jni_utils.h"
-#include "json_util.h"
 #include "singleton.h"
 
 namespace OHOS {
@@ -100,6 +100,9 @@ public:
 
     void CallJavaMethod(int32_t methodID, jobject object, jvalue *param,
                         std::vector<std::string> *result);
+
+    void CallJavaMethod(int32_t methodID, jobject object, jvalue *param,
+                        jobject *result);
 
     template <typename T>
     void CallJavaMethod(int32_t methodID, jobject object, jvalue *param,
@@ -299,7 +302,7 @@ public:
 
     void ConvertJavaString(std::string *source, jstring *result);
 
-    void ConvertJavaString(std::string const *source, jstring *result);
+    void ConvertJavaString(const std::string *source, jstring *result);
 
     void ConvertJavaString(const char *source, jstring *result);
 

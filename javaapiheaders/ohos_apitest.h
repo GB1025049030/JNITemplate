@@ -43,7 +43,7 @@ class TransformBooks : public Transform<Books> {
     public:
         void Extract(jobject source, Books *target) override;
         void Convert(jobject target, const Books *source) override;
-        jobject CreateObject(const Books *source) override;
+        jobject CreateJavaObject(const Books *source) override;
         void Release() override;
 };
 
@@ -52,7 +52,7 @@ class TransformClassRoom : public Transform<ClassRoom> {
     public:
         void Extract(jobject source, ClassRoom *target) override;
         void Convert(jobject target, const ClassRoom *source) override;
-        jobject CreateObject(const ClassRoom *source) override;
+        jobject CreateJavaObject(const ClassRoom *source) override;
         void Release() override;
 };
 
@@ -61,25 +61,25 @@ class TransformStudent : public Transform<Student> {
     public:
         void Extract(jobject source, Student *target) override;
         void Convert(jobject target, const Student *source) override;
-        jobject CreateObject(const Student *source) override;
+        jobject CreateJavaObject(const Student *source) override;
         void Release() override;
 };
 
 enum class Books_FIELD_CODE {
-    chinese = 1,
-    math = 2,
+    chinese = 12,
+    math = 13,
 };
 
 enum class ClassRoom_FIELD_CODE {
-    books = 3,
-    name = 4,
-    students = 5,
+    books = 14,
+    name = 15,
+    students = 16,
 };
 
 enum class Student_FIELD_CODE {
-    age = 6,
-    id = 7,
-    name = 8,
+    age = 17,
+    id = 18,
+    name = 19,
 };
 
 enum class MethodCode_OHOS_APITEST {
@@ -99,18 +99,32 @@ enum class MethodCode_OHOS_APITEST {
     SchoolManager_addClassRooms_1 = 2,
 
     /**
+     * sign: ()Lohos/apitest/ClassRoom;
+     * isStaticMethod: false
+     * isNonvirtualMethod: false
+     */
+    SchoolManager_getClassRoomFirst_1 = 3,
+
+    /**
      * sign: ()Ljava/util/List;
      * isStaticMethod: true
      * isNonvirtualMethod: false
      */
-    SchoolManager_getClassRooms_1 = 3,
+    SchoolManager_getClassRooms_1 = 4,
 
     /**
      * sign: ()Ljava/util/Map;
      * isStaticMethod: true
      * isNonvirtualMethod: false
      */
-    SchoolManager_getFirstBooks_1 = 4,
+    SchoolManager_getFirstBooks_1 = 5,
+
+    /**
+     * sign: ()Lohos/apitest/SchoolManager;
+     * isStaticMethod: true
+     * isNonvirtualMethod: false
+     */
+    SchoolManager_getInstance_1 = 6,
 };
 
 } // namespace APITEST

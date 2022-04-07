@@ -51,29 +51,35 @@ JNIUtils::~JNIUtils() {
 }
 
 int JNIUtils::InitUtilJavaClass(JNIEnv *env) {
-    std::map<std::string, std::vector<JavaUtilMethodInfo>>::iterator it;
-    for (it = sUtilClassMaps->begin(); it != sUtilClassMaps->end(); it++) {
-        auto clazzRet = env->FindClass(it->first.c_str());
-        if (!clazzRet) {
-            JNI_LOGE("InitJavaUtilList : class(%" LOG_LIMIT "s) is not exist",
-                     it->first.c_str());
-            return JNI_ERR;
-        }
-        auto clazz = (jclass)env->NewGlobalRef(clazzRet);
-        sUtilJClassIDs->insert(
-            std::pair<std::string, jclass>(it->first.c_str(), clazz));
-        for (const auto &info : it->second) {
-            jmethodID method =
-                env->GetMethodID(clazz, info.name.c_str(), info.sign.c_str());
-            if (!method) {
+    if (sUtilJClassIDs->empty() || sUtilJMethodIDs->empty()) {
+        std::map<std::string, std::vector<JavaUtilMethodInfo>>::iterator it;
+        for (it = sUtilClassMaps->begin(); it != sUtilClassMaps->end(); it++) {
+            auto clazzRet = env->FindClass(it->first.c_str());
+            if (!clazzRet) {
                 JNI_LOGE("InitJavaUtilList : class(%" LOG_LIMIT
-                         "s) don't have method(%" LOG_LIMIT "s)",
-                         it->first.c_str(), info.name.c_str());
-                continue;
+                         "s) is not exist",
+                         it->first.c_str());
+                return JNI_ERR;
             }
-            sUtilJMethodIDs->insert(
-                std::pair<JavaUtilMethod, jmethodID>(info.index, method));
+            auto clazz = (jclass)env->NewGlobalRef(clazzRet);
+            sUtilJClassIDs->insert(
+                std::pair<std::string, jclass>(it->first.c_str(), clazz));
+            for (const auto &info : it->second) {
+                jmethodID method = env->GetMethodID(clazz, info.name.c_str(),
+                                                    info.sign.c_str());
+                if (!method) {
+                    JNI_LOGE("InitJavaUtilList : class(%" LOG_LIMIT
+                             "s) don't have method(%" LOG_LIMIT "s)",
+                             it->first.c_str(), info.name.c_str());
+                    continue;
+                }
+                sUtilJMethodIDs->insert(
+                    std::pair<JavaUtilMethod, jmethodID>(info.index, method));
+            }
         }
+        JNI_LOGI("InitJavaUtilList: sUtilJClassIDs(%" LOG_LIMIT
+                 "lu), sUtilJMethodIDs(%" LOG_LIMIT "lu)",
+                 sUtilJClassIDs->size(), sUtilJMethodIDs->size());
     }
     return JNI_OK;
 }
@@ -91,6 +97,9 @@ int JNIUtils::InitModuleJavaClass(JNIEnv *env, const std::string &config) {
         for (auto &classInfo : jniInfo.classes) {
             JNI_LOGI("InitModuleJavaClass: class : %" LOG_LIMIT "s",
                      classInfo.className.c_str());
+            if (sModuleJClassIDs->count(classInfo.className) > 0) {
+                continue;
+            }
             auto clazzRet = env->FindClass(classInfo.className.c_str());
             if (!clazzRet) {
                 JNI_LOGE("InitModuleJavaClass : class(%" LOG_LIMIT
@@ -109,6 +118,9 @@ int JNIUtils::InitModuleJavaClass(JNIEnv *env, const std::string &config) {
                 std::pair<std::string, jclass>(classInfo.className, clazz));
             if (!classInfo.methods.empty()) {
                 for (auto &methodInfo : classInfo.methods) {
+                    if (sModuleMethodInfos->count(methodInfo.id) > 0) {
+                        continue;
+                    }
                     jmethodID methodID;
                     if (JNIInfoUtil::IsStatic(
                             methodInfo.returnObject.baseType.flag)) {
@@ -162,6 +174,9 @@ int JNIUtils::InitModuleJavaClass(JNIEnv *env, const std::string &config) {
                 }
             }
         }
+        JNI_LOGI("InitModuleJavaClass: sModuleJClassIDs(%" LOG_LIMIT
+                 "lu), sModuleFieldInfos(%" LOG_LIMIT "lu)",
+                 sModuleJClassIDs->size(), sModuleFieldInfos->size());
     } else {
         JNI_LOGE("InitModuleJavaClass: jniInfo is empty");
         return JNI_ERR;
@@ -1682,6 +1697,9 @@ int32_t JNITest(JNIEnv *env) {
     auto clazz = (jclass)env->NewGlobalRef(clazzRet);
     jmethodID list_init =
         env->GetMethodID(clazz, "<init>", "(Ljava/lang/String;)V");
+    if (list_init) {
+        return JNI_OK;
+    }
     return JNI_ERR;
 }
 }  // namespace TEMPLATE

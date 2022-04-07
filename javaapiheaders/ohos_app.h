@@ -13,28 +13,28 @@ enum class MethodCode_OHOS_APP {
      * isStaticMethod: false
      * isNonvirtualMethod: false
      */
-    AbilityManager_getAllRunningProcesses_1 = 1,
+    AbilityManager_getAllRunningProcesses_1 = 7,
 
     /**
      * sign: (Ljava/lang/String;)V
      * isStaticMethod: false
      * isNonvirtualMethod: false
      */
-    AbilityManager_killProcessesByBundleName_1 = 2,
+    AbilityManager_killProcessesByBundleName_1 = 8,
 
     /**
      * sign: (II)Ljava/util/List;
      * isStaticMethod: false
      * isNonvirtualMethod: false
      */
-    AbilityManager_queryRecentAbilityMissionInfo_1 = 3,
+    AbilityManager_queryRecentAbilityMissionInfo_1 = 9,
 
     /**
      * sign: (I)Ljava/util/List;
      * isStaticMethod: false
      * isNonvirtualMethod: false
      */
-    AbilityManager_queryRunningAbilityMissionInfo_1 = 4,
+    AbilityManager_queryRunningAbilityMissionInfo_1 = 10,
 };
 
 } // namespace APP

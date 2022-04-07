@@ -71,6 +71,7 @@ void APITest::NativeInit(JNIEnv *env) {
         if (auto tmp = sJSCallAndroidJniPtr.lock()) {
             JNI_LOGI("APITest : NativeInit : work");
             tmp->NativeInit(env, JSON_FILE_OHOS_APITEST);
+            //tmp->NativeInit(env, JSON_FILE_OHOS_BUNDLEMGR);
         }
         JNI_LOGI("APITest : NativeInit : end");
     }
@@ -110,6 +111,9 @@ void APITest::Test(JNIEnv *env) {
     GetClassRooms(&resultRooms);
     std::map<int, Books> resultBooks;
     GetFirstBooks(&resultBooks);
+
+    ClassRoom resultRoom;
+    GetClassRoomFirst(&resultRoom);
 }
 
 void APITest::GetClassRooms(std::vector<ClassRoom> *rooms) {
@@ -126,6 +130,24 @@ void APITest::GetClassRooms(std::vector<ClassRoom> *rooms) {
     }
     JNI_LOGI("APITest : GetClassRooms : end");
 }
+
+    void APITest::GetClassRoomFirst(ClassRoom* room) {
+        JNI_LOGI("APITest : GetClassRoomFirst : begin");
+        if (auto tmp = sJSCallAndroidJniPtr.lock()) {
+            TransformClassRoom transformClassRoom =
+                    TransformClassRoom(JAVA_BEAN_ClassRoom);
+            jobject source;
+            tmp->CallJavaMethod((int32_t)MethodCode_OHOS_APITEST::SchoolManager_getInstance_1,
+                                nullptr, nullptr, &source);
+            if (source) {
+                tmp->CallJavaMethod(
+                        (int32_t)MethodCode_OHOS_APITEST::SchoolManager_getClassRoomFirst_1,
+                        source, nullptr, room, &transformClassRoom);
+                JNI_LOGI("guobin : GetClassRoomFirst : room : %s", room->name.c_str());
+            }
+        }
+        JNI_LOGI("APITest : GetClassRooms : end");
+    }
 
 void APITest::GetFirstBooks(std::map<int, Books> *books) {
     JNI_LOGI("APITest : GetFirstBooks : begin");
@@ -173,7 +195,7 @@ void APITest::AddClassRooms(std::vector<ClassRoom> rooms) {
     JNI_LOGI("APITest : AddClassRooms : end");
 }
 
-void TransformStudent::Extract(jobject source, Student *target) {
+    void TransformStudent::Extract(jobject source, Student *target) {
     std::shared_ptr<JSCallAndroidJni> instance =
         DelayedSingleton<JSCallAndroidJni>::GetInstance();
     instance->GetFieldValue(source,

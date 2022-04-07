@@ -25,7 +25,7 @@
           },
           "name":"getPairBundleName",
           "sign":"(Ljava/lang/String;)Ljava/lang/String;",
-          "id":1
+          "id":11
         },
         {
           "args":[
@@ -50,7 +50,7 @@
           },
           "name":"installShellApk",
           "sign":"(Lohos/bundlemgr/InstallShellInfo;)Lohos/bundlemgr/PackageInstalledStatus;",
-          "id":2
+          "id":12
         },
         {
           "args":[
@@ -93,7 +93,7 @@
           },
           "name":"uninstallShellApk",
           "sign":"(Ljava/lang/String;IZ)Lohos/bundlemgr/PackageInstalledStatus;",
-          "id":3
+          "id":13
         }
       ],
       "pkgName":"ohos/bundlemgr",
@@ -107,7 +107,7 @@
       "fields":[
         {
           "name":"appId",
-          "id":1,
+          "id":49,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -117,7 +117,7 @@
         },
         {
           "name":"bundleName",
-          "id":2,
+          "id":50,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -127,7 +127,7 @@
         },
         {
           "name":"enabledAbilities",
-          "id":3,
+          "id":51,
           "baseType":{
             "flag":2048,
             "arrayDimension":1,
@@ -137,7 +137,7 @@
         },
         {
           "name":"isSystemApp",
-          "id":4,
+          "id":52,
           "baseType":{
             "flag":1024,
             "arrayDimension":0,
@@ -147,7 +147,7 @@
         },
         {
           "name":"sourceDir",
-          "id":5,
+          "id":53,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -157,7 +157,7 @@
         },
         {
           "name":"splitNames",
-          "id":6,
+          "id":54,
           "baseType":{
             "flag":2048,
             "arrayDimension":1,
@@ -167,7 +167,7 @@
         },
         {
           "name":"uid",
-          "id":7,
+          "id":55,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -177,7 +177,7 @@
         },
         {
           "name":"userId",
-          "id":8,
+          "id":56,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -194,7 +194,7 @@
       "fields":[
         {
           "name":"abilityName",
-          "id":9,
+          "id":57,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -204,7 +204,7 @@
         },
         {
           "name":"bundleName",
-          "id":10,
+          "id":58,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -214,7 +214,7 @@
         },
         {
           "name":"descriptionId",
-          "id":11,
+          "id":59,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -224,7 +224,7 @@
         },
         {
           "name":"hapSourceDir",
-          "id":12,
+          "id":60,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -234,7 +234,7 @@
         },
         {
           "name":"isJsForm",
-          "id":13,
+          "id":61,
           "baseType":{
             "flag":1024,
             "arrayDimension":0,
@@ -244,7 +244,7 @@
         },
         {
           "name":"landscapeLayoutIds",
-          "id":14,
+          "id":62,
           "baseType":{
             "flag":64,
             "arrayDimension":1,
@@ -254,7 +254,7 @@
         },
         {
           "name":"moduleName",
-          "id":15,
+          "id":63,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -264,7 +264,7 @@
         },
         {
           "name":"name",
-          "id":16,
+          "id":64,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -274,7 +274,7 @@
         },
         {
           "name":"originalBundleName",
-          "id":17,
+          "id":65,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -284,7 +284,7 @@
         },
         {
           "name":"packageName",
-          "id":18,
+          "id":66,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -294,7 +294,7 @@
         },
         {
           "name":"portraitLayoutIds",
-          "id":19,
+          "id":67,
           "baseType":{
             "flag":64,
             "arrayDimension":1,
@@ -311,7 +311,7 @@
       "fields":[
         {
           "name":"bundleName",
-          "id":20,
+          "id":68,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -321,7 +321,7 @@
         },
         {
           "name":"forms",
-          "id":21,
+          "id":69,
           "baseType":{
             "flag":4096,
             "arrayDimension":1,
@@ -331,7 +331,7 @@
         },
         {
           "name":"hapSourceDirs",
-          "id":22,
+          "id":70,
           "baseType":{
             "flag":2048,
             "arrayDimension":1,
@@ -341,7 +341,7 @@
         },
         {
           "name":"originalBundleName",
-          "id":23,
+          "id":71,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -351,7 +351,7 @@
         },
         {
           "name":"packageName",
-          "id":24,
+          "id":72,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -368,7 +368,7 @@
       "fields":[
         {
           "name":"entryHap",
-          "id":25,
+          "id":73,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -378,7 +378,7 @@
         },
         {
           "name":"featureHaps",
-          "id":26,
+          "id":74,
           "baseType":{
             "flag":2048,
             "arrayDimension":1,
@@ -388,7 +388,7 @@
         },
         {
           "name":"installerUid",
-          "id":27,
+          "id":75,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -398,7 +398,7 @@
         },
         {
           "name":"installLocation",
-          "id":28,
+          "id":76,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -408,7 +408,7 @@
         },
         {
           "name":"isAppend",
-          "id":29,
+          "id":77,
           "baseType":{
             "flag":1024,
             "arrayDimension":0,
@@ -418,7 +418,7 @@
         },
         {
           "name":"packageName",
-          "id":30,
+          "id":78,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -428,7 +428,7 @@
         },
         {
           "name":"provisioningBundleName",
-          "id":31,
+          "id":79,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -438,7 +438,7 @@
         },
         {
           "name":"restrictedPermissions",
-          "id":32,
+          "id":80,
           "baseType":{
             "flag":2048,
             "arrayDimension":1,
@@ -448,7 +448,7 @@
         },
         {
           "name":"userId",
-          "id":33,
+          "id":81,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -465,7 +465,7 @@
       "fields":[
         {
           "name":"shellInstalledDir",
-          "id":34,
+          "id":82,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -475,7 +475,7 @@
         },
         {
           "name":"status",
-          "id":35,
+          "id":83,
           "baseType":{
             "flag":64,
             "arrayDimension":0,
@@ -485,7 +485,7 @@
         },
         {
           "name":"statusMessage",
-          "id":36,
+          "id":84,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -502,7 +502,7 @@
       "fields":[
         {
           "name":"targetBundle",
-          "id":37,
+          "id":85,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,
@@ -512,7 +512,7 @@
         },
         {
           "name":"targetClass",
-          "id":38,
+          "id":86,
           "baseType":{
             "flag":2048,
             "arrayDimension":0,

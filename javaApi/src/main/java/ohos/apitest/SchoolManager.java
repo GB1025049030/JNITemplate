@@ -10,9 +10,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ohos.bundlemgr.BundleMgrAdapter;
+
 @JNIClass
 public class SchoolManager {
+    private static final Object INSTANCE_LOCK = new Object();
     public static List<ClassRoom> classRooms = new ArrayList<>();
+    public static SchoolManager mSchoolManager;
+
+    private SchoolManager() {}
+
+    @JNIMethod(sign = "()Lohos/apitest/SchoolManager;", isStaticMethod = true)
+    public static SchoolManager getInstance() {
+        if (mSchoolManager == null) {
+            synchronized (INSTANCE_LOCK) {
+                if (mSchoolManager == null) {
+                    mSchoolManager = new SchoolManager();
+                }
+            }
+        }
+        return mSchoolManager;
+    }
+
+    @JNIMethod(sign = "()Lohos/apitest/ClassRoom;")
+    public ClassRoom getClassRoomFirst() {
+        if (!classRooms.isEmpty()) {
+            return classRooms.get(0);
+        }
+        return null;
+    }
 
     @JNIMethod(sign = "()Ljava/util/List;", isStaticMethod = true)
     public static List<ClassRoom> getClassRooms() {
